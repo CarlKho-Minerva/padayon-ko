@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import os
-import google.generativeai as genai
 from dotenv import load_dotenv
+import google.generativeai as genai
 
 app = Flask(__name__)
 
@@ -34,6 +34,7 @@ def rewrite():
         data = request.get_json()
         if not data or 'essay' not in data:
             return jsonify({'error': 'Invalid input'}), 400
+
         essay = data['essay']
         chat_session = model.start_chat(history=[])
         response = chat_session.send_message(essay)
@@ -42,4 +43,5 @@ def rewrite():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)

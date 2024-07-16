@@ -1,0 +1,12 @@
+# .gitignore content
+
+# Ignore environment variables file
+.env
+
+# Ignore file with API keys
+api_keys.py
+
+# Ignore Python virtual environments
+venv/
+__pycache__/
+*.pyc

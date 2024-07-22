@@ -21,7 +21,9 @@ generation_config = {
 model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
     generation_config=generation_config,
-    system_instruction="Rewrite the given essay according to best practices. Make it clear, concise, and impactful.",
+    system_instruction="""
+    Rewrite the given essay according to best practices. Make it clear, concise, and impactful.
+    """,
 )
 
 @app.route('/')

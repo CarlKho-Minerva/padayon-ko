@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievement Resume Bullet Point Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 50%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        textarea {
+            width: 97%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+
+        #bullet,
+        #description {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Achievement Resume Bullet Point Generator</h1>
+        <textarea id="achievement" rows="10" placeholder="Describe your achievement..."></textarea>
+        <div>
+            <label>
+                <input type="checkbox" id="isEnglish" checked>
+                Input is in English
+            </label>
+        </div>
+        <button onclick="generateResume()">Generate</button>
+        <div id="result">
+            <h2>Bullet Point:</h2>
+            <p id="bullet"></p>
+            <h2>Detailed Description:</h2>
+            <p id="description"></p>
+        </div>
+    </div>
+
+    <script>
+        async function generateResume() {
+            const achievement = document.getElementById('achievement').value;
+            const isEnglish = document.getElementById('isEnglish').checked;
+            const bulletEl = document.getElementById('bullet');
+            const descriptionEl = document.getElementById('description');
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ achievement: achievement, isEnglish: isEnglish }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    bulletEl.textContent = data.bullet;
+                    descriptionEl.textContent = data.description;
+                } else {
+                    bulletEl.textContent = 'Error generating bullet point.';
+                    descriptionEl.textContent = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                bulletEl.textContent = 'Error generating bullet point.';
+                descriptionEl.textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+
+</html>

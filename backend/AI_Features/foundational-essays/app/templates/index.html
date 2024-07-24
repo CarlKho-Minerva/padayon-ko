@@ -27,8 +27,8 @@
             cursor: pointer;
             border: none;
             background-color: #f0f0f0;
-            color: black;
             margin-right: 5px;
+            color: black;
         }
 
         .tab.active {
@@ -102,6 +102,13 @@
             color: red;
             margin-top: 10px;
         }
+
+        .guiding-questions {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #007bff;
+        }
     </style>
 </head>
 
@@ -109,9 +116,12 @@
     <h1>Scholarship Essay Platform</h1>
 
     <div class="tab-container" id="tabContainer"></div>
+    <p>Select a prompt to get started. <i>Scroll Horizontally</i></p>
+
+    <div id="guidingQuestions" class="guiding-questions"></div>
 
     <div id="essayForm">
-        <textarea id="essayContent" placeholder="Paste your essay here..."></textarea>
+        <textarea id="essayContent" placeholder="Write your essay here..."></textarea>
         <div class="checkbox-container">
             <input type="checkbox" id="needsTranslation">
             <label for="needsTranslation">Needs translation to English</label>
@@ -125,20 +135,88 @@
 
     <div id="error" class="error"></div>
 
-    <button id="backBtn" style="display:none;">Back</button>
-
     <script>
         const essayPrompts = [
-            { id: 'tell_us_about_you', title: 'Tell Us About You' },
-            { id: 'how_are_you_unique', title: 'How Are You Unique?' },
-            { id: 'failure_and_learning', title: 'Failure and Learning' },
-            { id: 'academic_and_career_goals', title: 'Academic and Career Goals' },
-            { id: 'community_contribution', title: 'Community Contribution' },
-            { id: 'deserve_scholarship', title: 'Why You Deserve This Scholarship' },
-            { id: 'scholarship_help', title: 'How This Scholarship Will Help' },
-            { id: 'sports_impact', title: 'Sports Impact' },
-            { id: 'why_study_pursue', title: 'Why Study/Pursue X?' },
-            { id: 'belief_challenged', title: 'Belief Challenged' },
+            {
+                id: 'tell_us_about_you', title: 'Tell Us About You', questions: [
+                    "What personal challenges have you faced, and how did you overcome them?",
+                    "What responsibilities have you taken on within your family or community?",
+                    "What achievements are you most proud of?",
+                    "What are your future aspirations and how do they connect to your past experiences?"
+                ]
+            },
+            {
+                id: 'sports_impact', title: 'Impact of Sports', questions: [
+                    "What sport or athletic activity has had the most impact on your life?",
+                    "How has this activity shaped your character or values?",
+                    "Can you describe a specific moment in your sports journey that was particularly transformative?",
+                    "How have the skills you've developed through sports influenced other areas of your life?"
+                ]
+            },
+            {
+                id: 'why_study_pursue', title: 'Why Study/Pursue X?', questions: [
+                    "What specific experiences led you to your chosen field of study?",
+                    "How do your past experiences and future goals align with this field?",
+                    "What unique perspective or skills do you bring to this area of study?",
+                    "How do you plan to use your education in this field to make an impact?"
+                ]
+            },
+            {
+                id: 'community_contribution', title: 'Community Contribution', questions: [
+                    "What community service project have you been involved in?",
+                    "What challenge did you aim to address through this project?",
+                    "What actions did you take, and what was your specific role?",
+                    "What impact did your project have on the community, and what lessons did you learn?"
+                ]
+            },
+            {
+                id: 'how_are_you_unique', title: 'How Are You Unique?', questions: [
+                    "What aspects of your background, identity, interests, or talents are most meaningful to you?",
+                    "How have these unique qualities shaped your perspective or goals?",
+                    "Can you describe a specific experience that highlights your uniqueness?",
+                    "How do you plan to use your unique qualities to contribute to your future community or profession?"
+                ]
+            },
+            {
+                id: 'failure_and_learning', title: 'Failure and Learning', questions: [
+                    "What significant failure have you experienced?",
+                    "How did this failure impact you emotionally and practically?",
+                    "What steps did you take to address the situation or overcome the setback?",
+                    "What important lessons did you learn from this experience, and how have you applied them?"
+                ]
+            },
+            {
+                id: 'academic_and_career_goals', title: 'Academic/Career Goals', questions: [
+                    "What are your primary academic and career goals?",
+                    "How have your past experiences or challenges shaped these goals?",
+                    "What steps have you already taken towards achieving these goals?",
+                    "How do you see your goals contributing to your field or community in the future?"
+                ]
+            },
+            {
+                id: 'belief_challenged', title: 'Belief Challenged', questions: [
+                    "What belief or idea of yours was significantly challenged?",
+                    "What situation or experience led to this challenge?",
+                    "How did you respond to having your belief or idea challenged?",
+                    "How did this experience change your perspective or approach to similar situations?"
+                ]
+            },
+            {
+                id: 'deserve_scholarship', title: 'Why Deserve Scholarship?', questions: [
+                    "What unique qualities or experiences make you a strong candidate for this scholarship?",
+                    "How have you demonstrated dedication to your field of study or community?",
+                    "What challenges have you overcome that showcase your resilience and determination?",
+                    "How will you use this scholarship to further your goals and make a positive impact?"
+                ]
+            },
+            {
+                id: 'scholarship_help', title: 'How Scholarship Helps', questions: [
+                    "What specific financial challenges are you facing in pursuing your education?",
+                    "How will this scholarship concretely help you achieve your academic or career goals?",
+                    "What opportunities will this scholarship open up for you that might otherwise be unavailable?",
+                    "How do you plan to pay it forward or contribute to your community if you receive this scholarship?"
+                ]
+            },
         ];
 
         let activePrompt = essayPrompts[0].id;
@@ -160,9 +238,20 @@
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.toggle('active', tab.textContent === essayPrompts.find(p => p.id === promptId).title);
             });
+            updateGuidingQuestions(promptId);
         }
 
-        // Update the handleSubmit function
+        function updateGuidingQuestions(promptId) {
+            const guidingQuestionsDiv = document.getElementById('guidingQuestions');
+            const prompt = essayPrompts.find(p => p.id === promptId);
+            guidingQuestionsDiv.innerHTML = `
+                <h3>Guiding Questions for "${prompt.title}":</h3>
+                <ul>
+                    ${prompt.questions.map(q => `<li>${q}</li>`).join('')}
+                </ul>
+            `;
+        }
+
         async function handleSubmit() {
             const essayContent = document.getElementById('essayContent').value;
             const needsTranslation = document.getElementById('needsTranslation').checked;
@@ -170,15 +259,17 @@
             const loading = document.getElementById('loading');
             const processedEssayDiv = document.getElementById('processedEssay');
             const errorDiv = document.getElementById('error');
-            const backBtn = document.getElementById('backBtn'); // Get the back button
+
             if (!essayContent.trim()) {
                 errorDiv.textContent = 'Please enter your essay content.';
                 return;
             }
+
             submitBtn.disabled = true;
             loading.style.display = 'block';
             errorDiv.textContent = '';
             processedEssayDiv.textContent = '';
+
             try {
                 const response = await fetch('/process', {
                     method: 'POST',
@@ -189,11 +280,12 @@
                         needs_translation: needsTranslation,
                     }),
                 });
+
                 if (!response.ok) throw new Error('Failed to process essay');
+
                 const data = await response.json();
                 processedEssayDiv.textContent = data.processed_essay;
-                document.getElementById('essayForm').style.display = 'none'; // Hide the form
-                backBtn.style.display = 'block'; // Show the back button
+                document.getElementById('essayForm').style.display = 'none';
             } catch (err) {
                 errorDiv.textContent = 'An error occurred while processing your essay. Please try again.';
             } finally {
@@ -202,19 +294,10 @@
             }
         }
 
-        // Add event listener for the Back button
-        document.getElementById('backBtn').addEventListener('click', function () {
-            document.getElementById('essayForm').style.display = 'block'; // Show the form
-            document.getElementById('processedEssay').style.display = 'none'; // Hide the processed essay
-            document.getElementById('backBtn').style.display = 'none'; // Hide the back button
-            document.getElementById('error').textContent = ''; // Clear any error messages
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
             createTabs();
             document.getElementById('submitBtn').addEventListener('click', handleSubmit);
         });
-
     </script>
 </body>
 

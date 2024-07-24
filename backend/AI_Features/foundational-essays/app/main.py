@@ -1,17 +1,16 @@
 # UNCOMMENT TRANSLATES ONCE DEVELOPED
 
-import os
 from flask import Flask, request, jsonify, render_template
 import os
 from dotenv import load_dotenv
-
-
-# %pip install google.generativeai
 import google.generativeai as genai
 
 # from google.cloud import translate_v2 as translate
 
 app = Flask(__name__)
+
+# Clear any existing environment variable
+os.environ.pop("GEMINI_API_KEY", None)
 
 # Load environment variables from .env file
 load_dotenv()

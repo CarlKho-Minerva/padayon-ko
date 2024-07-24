@@ -16,62 +16,121 @@
             align-items: center;
             min-height: 100vh;
             background-color: #f4f4f4;
-        }
-
-        .container {
-            width: 50%;
-            max-width: 800px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1,
-        h2 {
             color: #333;
         }
 
-        textarea {
-            width: 97%;
-            padding: 10px;
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.4em;
+            margin-top: 25px;
             margin-bottom: 10px;
+        }
+
+        p,
+        li {
+            font-size: 1em;
+            color: #555;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
             resize: vertical;
+            font-size: 1em;
         }
 
         button {
             display: block;
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
+            padding: 12px;
+            background-color: #3498db;
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #2980b9;
         }
 
         #result {
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         #bullet,
         #description {
-            background-color: #e9ecef;
-            padding: 10px;
+            background-color: #ecf0f1;
+            padding: 15px;
             border-radius: 4px;
-            margin-top: 5px;
+            margin-top: 10px;
+            font-size: 1em;
+        }
+
+        .guidelines-toggle {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .guidelines-content {
+            display: none;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
         }
 
         @media (max-width: 768px) {
             .container {
                 width: 95%;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            h3 {
+                font-size: 1.2em;
             }
         }
     </style>
@@ -80,6 +139,45 @@
 <body>
     <div class="container">
         <h1>Achievement Resume Bullet Point Generator</h1>
+
+        <button class="guidelines-toggle" onclick="toggleGuidelines()">Click to view guidelines</button>
+        <div class="guidelines-content" id="guidelines">
+            <h2>User Facing Guidelines</h2>
+            <h3>Achievement Description Guidelines</h3>
+            <p>We're going to help you create powerful descriptions of your achievements for scholarship applications or
+                resumes. Don't worry about sounding perfect or stumbling over your words - our AI will clean everything
+                up later. Just focus on answering these questions as thoroughly as you can:</p>
+            <ol>
+                <li>What specific goal or task did you accomplish?</li>
+                <li>Can you quantify your results? (Think numbers, percentages, or measurable outcomes)</li>
+                <li>What specific actions did you take to achieve this result?</li>
+                <li>How many people were involved or impacted by your work?</li>
+                <li>What leadership role did you play, if any?</li>
+                <li>What challenges or obstacles did you overcome?</li>
+                <li>How long did this achievement take? Provide a timeframe.</li>
+                <li>What skills did you develop or demonstrate through this experience?</li>
+                <li>How does this achievement relate to your future goals or field of study?</li>
+                <li>What makes this accomplishment unique or stand out?</li>
+                <li>If applicable, how much money was involved? (funds raised, budget managed, etc.)</li>
+                <li>How did this achievement impact your community or organization?</li>
+                <li>Did you receive any awards, recognition, or media coverage for this?</li>
+                <li>What personal growth did you experience from this achievement?</li>
+                <li>Can you think of any evidence to support your claims? (certificates, links, references, etc.)</li>
+            </ol>
+            <h3>Remember:</h3>
+            <ul>
+                <li>It's okay to speak casually or even ramble - just focus on providing detailed information.</li>
+                <li>Don't worry about organizing your thoughts perfectly - the AI will structure your achievement later.
+                </li>
+                <li>If you can't answer all questions, that's fine. Just provide as much detail as you can for the
+                    relevant ones.</li>
+                <li>Feel free to include any additional information you think is important, even if it doesn't fit these
+                    questions exactly.</li>
+            </ul>
+            <p>Your detailed responses will help our AI create a polished, impactful description of your achievement.
+                Just relax and tell us your story!</p>
+        </div>
+
         <textarea id="achievement" rows="10" placeholder="Describe your achievement..."></textarea>
         <div>
             <label>
@@ -95,14 +193,24 @@
             <p id="description"></p>
         </div>
     </div>
-
     <script>
+        function toggleGuidelines() {
+            var content = document.getElementById("guidelines");
+            var button = document.querySelector(".guidelines-toggle");
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                button.textContent = "Click to view guidelines";
+            } else {
+                content.style.display = "block";
+                button.textContent = "Click to hide guidelines";
+            }
+        }
+
         async function generateResume() {
             const achievement = document.getElementById('achievement').value;
             const isEnglish = document.getElementById('isEnglish').checked;
             const bulletEl = document.getElementById('bullet');
             const descriptionEl = document.getElementById('description');
-
             try {
                 const response = await fetch('/generate', {
                     method: 'POST',
@@ -111,9 +219,7 @@
                     },
                     body: JSON.stringify({ achievement: achievement, isEnglish: isEnglish }),
                 });
-
                 const data = await response.json();
-
                 if (response.ok) {
                     bulletEl.textContent = data.bullet;
                     descriptionEl.textContent = data.description;

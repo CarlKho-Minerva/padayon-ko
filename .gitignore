@@ -1,4 +1,5 @@
 # .gitignore content
+important_code.ipynb
 
 # Ignore environment variables file
 .env

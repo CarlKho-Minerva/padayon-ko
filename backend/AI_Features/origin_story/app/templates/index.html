@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Origin Story Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a1a;
+        }
+
+        .tab-container {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background-color: #f0f0f0;
+            margin-right: 5px;
+            color: black;
+        }
+
+        .tab.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .checkbox-container {
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading:after {
+            content: '.';
+            animation: dots 1s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+
+            0%,
+            20% {
+                content: '.';
+            }
+
+            40% {
+                content: '..';
+            }
+
+            60% {
+                content: '...';
+            }
+
+            80%,
+            100% {
+                content: '';
+            }
+        }
+
+        #processedEssay {
+            white-space: pre-wrap;
+            background-color: #f0f0f0;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .guiding-questions {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #007bff;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .radio-group {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Origin Story Generator</h1>
+
+    <div class="tab-container">
+        <button class="tab active" id="toggleText" onclick="toggleGuidelines()">Show Guide Questions</button>
+    </div>
+
+    <div id="guidelines" class="guiding-questions" style="display: none;">
+        <h2>Guidelines for Crafting Your Origin Story</h2>
+        <ol>
+            <li>What was the pivotal moment or experience that set you on your current path?
+                <ul>
+                    <li>Describe the situation in detail.</li>
+                    <li>How did this moment make you feel?</li>
+                </ul>
+            </li>
+            <li>Before this pivotal moment, what was your life like?
+                <ul>
+                    <li>What were your aspirations or beliefs at that time?</li>
+                    <li>How does this contrast with your current situation?</li>
+                </ul>
+            </li>
+            <li>What specific challenge or problem did you face that led to your journey?
+                <ul>
+                    <li>How did this challenge affect you personally?</li>
+                    <li>Why was addressing this challenge important to you?</li>
+                </ul>
+            </li>
+            <li>What actions did you take to overcome this challenge?
+                <ul>
+                    <li>List the key steps you took in chronological order.</li>
+                    <li>What was your reasoning behind each action?</li>
+                </ul>
+            </li>
+            <li>What obstacles did you encounter along the way?
+                <ul>
+                    <li>Describe the most significant setbacks you faced.</li>
+                    <li>How did these obstacles test your resolve?</li>
+                </ul>
+            </li>
+            <li>How did you overcome these obstacles?
+                <ul>
+                    <li>What personal qualities or skills did you rely on?</li>
+                    <li>Did you receive help from others? If so, how did this impact your journey?</li>
+                </ul>
+            </li>
+            <li>What was the outcome of your efforts?
+                <ul>
+                    <li>How did the final result compare to your initial expectations?</li>
+                    <li>What tangible impact did your actions have?</li>
+                </ul>
+            </li>
+            <li>How did this experience transform you?
+                <ul>
+                    <li>What new skills or insights did you gain?</li>
+                    <li>How did your worldview or values shift?</li>
+                </ul>
+            </li>
+            <li>How has this journey influenced your current goals and aspirations?
+                <ul>
+                    <li>What new opportunities have opened up for you?</li>
+                    <li>How do you plan to build upon this experience?</li>
+                </ul>
+            </li>
+            <li>If you could capture the essence of your journey in three key moments, what would they be?
+                <ul>
+                    <li>For each moment, explain: What happened? Why was it significant? How did it shape your overall
+                        story?</li>
+                </ul>
+            </li>
+            <li>What message or lesson from your story do you want others to remember?
+                <ul>
+                    <li>How might your experience inspire or help others?</li>
+                    <li>What universal truth does your story illuminate?</li>
+                </ul>
+            </li>
+            <li>How does your origin story reflect who you are today and who you aspire to be?
+                <ul>
+                    <li>What aspects of your personality shine through in this narrative?</li>
+                    <li>How does this story set the stage for your future endeavors?</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <textarea id="userInput" placeholder="Enter your accomplishment here..."></textarea>
+
+    <div class="options">
+        <div class="checkbox-container">
+            <label>
+                <input type="checkbox" id="isEnglish" checked>
+                Is the input in English?
+            </label>
+        </div>
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="storyLength" value="short" checked>
+                Short (Elevator Pitch)
+            </label>
+            <label>
+                <input type="radio" name="storyLength" value="medium">
+                Medium
+            </label>
+            <label>
+                <input type="radio" name="storyLength" value="long">
+                Long
+            </label>
+        </div>
+    </div>
+
+    <button id="submitBtn" onclick="generateStory()">Generate Origin Story</button>
+
+    <div class="loading" id="loading">Generating your story</div>
+
+    <div id="processedEssay"></div>
+
+    <div class="error" id="error"></div>
+
+    <script>
+        function toggleGuidelines() {
+            const guidelines = document.getElementById('guidelines');
+            const toggleText = document.getElementById('toggleText');
+            if (guidelines.style.display === 'none') {
+                guidelines.style.display = 'block';
+                toggleText.textContent = 'Hide Guide Questions';
+            } else {
+                guidelines.style.display = 'none';
+                toggleText.textContent = 'Show Guide Questions';
+            }
+        }
+
+        async function generateStory() {
+            const userInput = document.getElementById('userInput').value;
+            const isEnglish = document.getElementById('isEnglish').checked;
+            const storyLength = document.querySelector('input[name="storyLength"]:checked').value;
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const processedEssay = document.getElementById('processedEssay');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!userInput) {
+                error.textContent = 'Please enter your accomplishment.';
+                return;
+            }
+
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+            error.textContent = '';
+            processedEssay.textContent = '';
+
+            try {
+                const response = await fetch('/process_story', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userInput, isEnglish, storyLength }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate story');
+                }
+
+                const data = await response.json();
+                processedEssay.textContent = data.result;
+            } catch (err) {
+                error.textContent = 'An error occurred while generating the story. Please try again.';
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Initialize with guidelines visible
+        document.getElementById('guidelines').style.display = 'none';
+    </script>
+</body>
+
+</html>

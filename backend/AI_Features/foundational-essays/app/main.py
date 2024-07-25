@@ -1,11 +1,12 @@
 # UNCOMMENT TRANSLATES ONCE DEVELOPED
 
-from flask import Flask, request, jsonify, render_template
 import os
-from dotenv import load_dotenv
 import google.generativeai as genai
+from dotenv import load_dotenv
 
 # from google.cloud import translate_v2 as translate
+from flask import Flask, request, jsonify, render_template
+
 
 app = Flask(__name__)
 

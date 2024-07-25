@@ -1,5 +1,4 @@
 # .gitignore content
-important_code.ipynb
 
 # Ignore environment variables file
 .env
@@ -11,3 +10,5 @@ api_keys.py
 venv/
 __pycache__/
 *.pyc
+
+Dockerfile

@@ -5,18 +5,17 @@ from dotenv import load_dotenv
 
 app = Flask(__name__)
 
-# Clear any existing environment variable
-os.environ.pop("GEMINI_API_KEY", None)
+# # Clear any existing environment variable
+# os.environ.pop("GEMINI_API_KEY", None)
 
-# Load environment variables from .env file
-load_dotenv()
+# # Load environment variables from .env file
+# load_dotenv()
 
-# Retrieve the API key from environment variables
-gemini_api_key = os.getenv("GEMINI_API_KEY")
-print(gemini_api_key)
+# # Retrieve the API key from environment variables
+# gemini_api_key = os.getenv("GEMINI_API_KEY")
+# print(gemini_api_key)
 
-genai.configure(api_key=gemini_api_key)
-
+genai.configure(api_key="AIzaSyDgJ_0xf87nMi-OYpIqo9BA9EZrsYCrlGo")
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},

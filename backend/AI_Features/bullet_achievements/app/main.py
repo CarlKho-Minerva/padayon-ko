@@ -15,7 +15,7 @@ app = Flask(__name__)
 # gemini_api_key = os.getenv("GEMINI_API_KEY")
 # print(gemini_api_key)
 
-genai.configure(api_key="AIzaSyDgJ_0xf87nMi-OYpIqo9BA9EZrsYCrlGo")
+genai.configure(api_key="")
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -187,6 +187,8 @@ def refine_and_optimize(bulletPoint, detailedDescription, rawInput):
 
     Current Description: {detailedDescription}
 
+    Remove markdown as we need it in a plain text format.
+    
     Provide a refined version of both the bullet point and description, separated by a tilde (~):
 
     Refined Bullet:

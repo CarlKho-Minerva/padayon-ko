@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Communication Practice</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+      }
+      #prompt-container {
+        background-color: #ecf0f1;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+      #randomize-btn {
+        display: block;
+        margin: 10px auto;
+        padding: 10px 20px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+      }
+      .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+      }
+      .tab button:hover {
+        background-color: #ddd;
+      }
+      .tab button.active {
+        background-color: #ccc;
+      }
+      .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+      }
+      #record-btn {
+        display: block;
+        margin: 20px auto;
+        padding: 15px 30px;
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      #output-container {
+        margin-top: 20px;
+        background-color: #ecf0f1;
+        padding: 20px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AI Communication Practice</h1>
+
+    <div id="prompt-container">
+      <h2>Water Cooler Prompt:</h2>
+      <p id="prompt-text"></p>
+      <button id="randomize-btn">Randomize Prompt</button>
+    </div>
+
+    <div class="tab">
+      <button class="tablinks" onclick="openMode(event, 'Debate')">
+        Debate/Defend
+      </button>
+      <button class="tablinks" onclick="openMode(event, 'Narrate')">
+        Narrate/Storytell
+      </button>
+      <button class="tablinks" onclick="openMode(event, 'Explain')">
+        Explain
+      </button>
+      <button class="tablinks" onclick="openMode(event, 'Question')">
+        Question Formation/Answering
+      </button>
+    </div>
+
+    <div id="Debate" class="tabcontent">
+      <h3>Debate/Defend Guidelines</h3>
+      <ul>
+        <li>Clearly state your position on the topic</li>
+        <li>Provide evidence or logical reasoning to support your argument</li>
+        <li>Anticipate and address potential counterarguments</li>
+        <li>Use persuasive language and tone</li>
+        <li>Conclude with a strong restatement of your position</li>
+      </ul>
+    </div>
+
+    <div id="Narrate" class="tabcontent">
+      <h3>Narrate/Storytell Guidelines</h3>
+      <ul>
+        <li>Set the scene with vivid descriptions</li>
+        <li>Introduce interesting characters or elements</li>
+        <li>Create a clear plot or sequence of events</li>
+        <li>Use dialogue to bring the story to life</li>
+        <li>End with a satisfying conclusion or cliffhanger</li>
+      </ul>
+    </div>
+
+    <div id="Explain" class="tabcontent">
+      <h3>Explain Guidelines</h3>
+      <ul>
+        <li>Start with a clear, concise definition of the concept</li>
+        <li>Use relatable metaphors or analogies</li>
+        <li>Break down complex ideas into simpler components</li>
+        <li>Provide concrete examples to illustrate your points</li>
+        <li>Summarize key takeaways at the end</li>
+      </ul>
+    </div>
+
+    <div id="Question" class="tabcontent">
+      <h3>Question Formation/Answering Guidelines</h3>
+      <ul>
+        <li>For questions: Start with who, what, when, where, why, or how</li>
+        <li>Ensure questions are clear, concise, and focused</li>
+        <li>For answers: Directly address the main point of the question</li>
+        <li>Provide context or background information when necessary</li>
+        <li>
+          If unsure, acknowledge limitations and suggest where to find more
+          information
+        </li>
+      </ul>
+    </div>
+
+    <button id="record-btn">Record</button>
+
+    <div id="output-container">
+      <h3>Your Input:</h3>
+      <p id="user-input"></p>
+      <h3>AI Response:</h3>
+      <p id="ai-response"></p>
+      <audio id="audio-response" controls></audio>
+    </div>
+
+    <script>
+      let currentMode = "Debate";
+      let isRecording = false;
+      let mediaRecorder;
+      let audioChunks = [];
+
+      function openMode(evt, modeName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(modeName).style.display = "block";
+        evt.currentTarget.className += " active";
+        currentMode = modeName;
+      }
+
+      document
+        .getElementById("randomize-btn")
+        .addEventListener("click", getNewPrompt);
+      document
+        .getElementById("record-btn")
+        .addEventListener("click", toggleRecording);
+
+      function getNewPrompt() {
+        fetch("/get_prompt")
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("prompt-text").textContent = data.prompt;
+          });
+      }
+
+      function toggleRecording() {
+        if (!isRecording) {
+          startRecording();
+        } else {
+          stopRecording();
+        }
+      }
+
+      function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+          mediaRecorder = new MediaRecorder(stream, {
+            mimeType: "audio/webm;codecs=opus",
+            audioBitsPerSecond: 128000,
+          });
+          mediaRecorder.start();
+
+          mediaRecorder.addEventListener("dataavailable", (event) => {
+            audioChunks.push(event.data);
+          });
+
+          mediaRecorder.addEventListener("stop", () => {
+            const audioBlob = new Blob(audioChunks, {
+              type: "audio/webm;codecs=opus",
+            });
+            sendAudioToServer(audioBlob);
+          });
+
+          isRecording = true;
+          document.getElementById("record-btn").textContent = "Stop";
+        });
+      }
+
+      function stopRecording() {
+        mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById("record-btn").textContent = "Record";
+      }
+
+      function sendAudioToServer(audioBlob) {
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "recording.webm"); // Changed to .webm
+        formData.append("mode", currentMode);
+
+        fetch("/process_audio", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.json().then((err) => {
+                throw err;
+              });
+            }
+            return response.json();
+          })
+          .then((data) => {
+            document.getElementById("user-input").textContent = data.user_input;
+            document.getElementById("ai-response").textContent =
+              data.ai_response;
+
+            const audio = document.getElementById("audio-response");
+            audio.src = "data:audio/mp3;base64," + data.audio_response;
+            audio.play();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            document.getElementById("user-input").textContent =
+              "Error: " + (error.error || "Failed to process audio");
+            document.getElementById("ai-response").textContent = "";
+            document.getElementById("audio-response").src = "";
+          });
+      }
+
+      // Initialize with a prompt and open the Debate tab
+      getNewPrompt();
+      document.getElementsByClassName("tablinks")[0].click();
+    </script>
+  </body>
+</html>

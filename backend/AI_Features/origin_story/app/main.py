@@ -15,7 +15,7 @@ load_dotenv()
 # Retrieve the API key from environment variables
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 
-genai.configure(api_key="AIzaSyDgJ_0xf87nMi-OYpIqo9BA9EZrsYCrlGo")
+genai.configure(api_key="")
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},

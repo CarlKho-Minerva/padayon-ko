@@ -103,25 +103,48 @@ def optimize_for_marketing(user_input):
     response = model.generate_content(prompt)
     return response.text
 
+DEBUG_MODE = True
+
+def debug_print(message):
+    """Prints a debug message if DEBUG_MODE is True."""
+    if DEBUG_MODE:
+        print(message)
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-
 @app.route("/process_story", methods=["POST"])
 def process_story():
     data = request.json
+    debug_print("\n### Received Data\n")
+    debug_print(f"Data: {data}\n")
+
     user_input = data["userInput"]
     is_english = data["isEnglish"]
     story_length = data["storyLength"]
 
+    debug_print("### Initial Input\n")
+    debug_print(f"User Input: {user_input}\n")
+    debug_print(f"Is English: {is_english}\n")
+    debug_print(f"Story Length: {story_length}\n")
+
     if not is_english:
         user_input = translate_to_english(user_input)
+        debug_print("### Translating to English\n")
+        debug_print(f"Translated Input: {user_input}\n")
 
     cleaned_text = cleanup_text(user_input)
+    debug_print("### Cleaning Text\n")
+    debug_print(f"Cleaned Text: {cleaned_text}\n")
+
     origin_story = craft_origin_story(cleaned_text, story_length)
+    debug_print("### Crafting Origin Story\n")
+    debug_print(f"Origin Story: {origin_story}\n")
+
     optimized_story = optimize_for_marketing(origin_story)
+    debug_print("### Optimizing for Marketing\n")
+    debug_print(f"Optimized Story: {optimized_story}\n")
 
     return jsonify({"result": optimized_story})
 

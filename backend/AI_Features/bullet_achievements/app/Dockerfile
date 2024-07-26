@@ -20,6 +20,7 @@ ENV FLASK_APP=main.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=8080
 ENV PORT=8080
+ENV GEMINI_API_KEY="AIzaSyDgJ_0xf87nMi-OYpIqo9BA9EZrsYCrlGo"
 
 # Run the application
 CMD ["sh", "-c", ". venv/bin/activate && flask run"]

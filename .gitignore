@@ -10,3 +10,5 @@ api_keys.py
 venv/
 __pycache__/
 *.pyc
+
+Dockerfile

@@ -19,7 +19,7 @@ EXPOSE 8080
 ENV FLASK_APP=main.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_RUN_PORT=8080
-ENV PORT 8080
+ENV PORT=8080
 
 # Run the application
 CMD ["sh", "-c", ". venv/bin/activate && flask run"]

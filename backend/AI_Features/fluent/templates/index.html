@@ -1,276 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Communication Practice</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-      }
-      h1 {
-        text-align: center;
-        color: #2c3e50;
-      }
-      #prompt-container {
-        background-color: #ecf0f1;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-      }
-      #randomize-btn {
-        display: block;
-        margin: 10px auto;
-        padding: 10px 20px;
-        background-color: #3498db;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      .tab {
-        overflow: hidden;
-        border: 1px solid #ccc;
-        background-color: #f1f1f1;
-      }
-      .tab button {
-        background-color: inherit;
-        float: left;
-        border: none;
-        outline: none;
-        cursor: pointer;
-        padding: 14px 16px;
-        transition: 0.3s;
-      }
-      .tab button:hover {
-        background-color: #ddd;
-      }
-      .tab button.active {
-        background-color: #ccc;
-      }
-      .tabcontent {
-        display: none;
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-        border-top: none;
-      }
-      #record-btn {
-        display: block;
-        margin: 20px auto;
-        padding: 15px 30px;
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        font-size: 18px;
-        cursor: pointer;
-      }
-      #output-container {
-        margin-top: 20px;
-        background-color: #ecf0f1;
-        padding: 20px;
-        border-radius: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>AI Communication Practice</h1>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-8">AI Communication Practice</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Water Cooler Section -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Water Cooler</h2>
+                <p id="water-cooler-prompt" class="text-gray-700 mb-4">Welcome! Let's start a casual conversation. What's your favorite way to relax after a long day?</p>
+                <button id="randomize-prompt" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                    <i class="fas fa-random mr-2"></i>Randomize Prompt
+                </button>
+            </div>
 
-    <div id="prompt-container">
-      <h2>Water Cooler Prompt:</h2>
-      <p id="prompt-text"></p>
-      <button id="randomize-btn">Randomize Prompt</button>
-    </div>
+            <!-- Main Chat Interface -->
+            <div class="md:col-span-2 bg-white rounded-lg shadow-md p-6">
+                <!-- Tabs -->
+                <div class="mb-4">
+                    <ul class="flex border-b">
+                        <li class="mr-1">
+                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="debate">Debate</a>
+                        </li>
+                        <li class="mr-1">
+                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="storytelling">Storytelling</a>
+                        </li>
+                        <li class="mr-1">
+                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="qa">Q&A</a>
+                        </li>
+                        <li class="mr-1">
+                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="explain">Explain</a>
+                        </li>
+                    </ul>
+                </div>
 
-    <div class="tab">
-      <button class="tablinks" onclick="openMode(event, 'Debate')">
-        Debate/Defend
-      </button>
-      <button class="tablinks" onclick="openMode(event, 'Narrate')">
-        Narrate/Storytell
-      </button>
-      <button class="tablinks" onclick="openMode(event, 'Explain')">
-        Explain
-      </button>
-      <button class="tablinks" onclick="openMode(event, 'Question')">
-        Question Formation/Answering
-      </button>
-    </div>
+                <!-- Guidelines -->
+                <div id="guidelines" class="mb-4 p-4 bg-gray-100 rounded">
+                    <h3 class="font-semibold mb-2">Guidelines:</h3>
+                    <p class="text-sm text-gray-700">Select a mode to see specific guidelines.</p>
+                </div>
 
-    <div id="Debate" class="tabcontent">
-      <h3>Debate/Defend Guidelines</h3>
-      <ul>
-        <li>Clearly state your position on the topic</li>
-        <li>Provide evidence or logical reasoning to support your argument</li>
-        <li>Anticipate and address potential counterarguments</li>
-        <li>Use persuasive language and tone</li>
-        <li>Conclude with a strong restatement of your position</li>
-      </ul>
-    </div>
+                <!-- Chat Container -->
+                <div id="chat-container" class="h-80 overflow-y-auto border border-gray-300 rounded p-4 mb-4">
+                    <!-- Messages will be appended here -->
+                </div>
 
-    <div id="Narrate" class="tabcontent">
-      <h3>Narrate/Storytell Guidelines</h3>
-      <ul>
-        <li>Set the scene with vivid descriptions</li>
-        <li>Introduce interesting characters or elements</li>
-        <li>Create a clear plot or sequence of events</li>
-        <li>Use dialogue to bring the story to life</li>
-        <li>End with a satisfying conclusion or cliffhanger</li>
-      </ul>
-    </div>
+                <!-- Controls -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-2">
+                        <button id="record-btn" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition">
+                            <i class="fas fa-microphone mr-2"></i>Record
+                        </button>
+                        <button id="pause-btn" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition" disabled>
+                            <i class="fas fa-pause mr-2"></i>Pause
+                        </button>
+                        <button id="submit-btn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition" disabled>
+                            <i class="fas fa-paper-plane mr-2"></i>Submit
+                        </button>
+                    </div>
+                    <div id="timer" class="text-xl font-mono">00:00</div>
+                </div>
 
-    <div id="Explain" class="tabcontent">
-      <h3>Explain Guidelines</h3>
-      <ul>
-        <li>Start with a clear, concise definition of the concept</li>
-        <li>Use relatable metaphors or analogies</li>
-        <li>Break down complex ideas into simpler components</li>
-        <li>Provide concrete examples to illustrate your points</li>
-        <li>Summarize key takeaways at the end</li>
-      </ul>
-    </div>
-
-    <div id="Question" class="tabcontent">
-      <h3>Question Formation/Answering Guidelines</h3>
-      <ul>
-        <li>For questions: Start with who, what, when, where, why, or how</li>
-        <li>Ensure questions are clear, concise, and focused</li>
-        <li>For answers: Directly address the main point of the question</li>
-        <li>Provide context or background information when necessary</li>
-        <li>
-          If unsure, acknowledge limitations and suggest where to find more
-          information
-        </li>
-      </ul>
-    </div>
-
-    <button id="record-btn">Record</button>
-
-    <div id="output-container">
-      <h3>Your Input:</h3>
-      <p id="user-input"></p>
-      <h3>AI Response:</h3>
-      <p id="ai-response"></p>
-      <audio id="audio-response" controls></audio>
+                <audio id="audio-response" controls class="w-full"></audio>
+            </div>
+        </div>
     </div>
 
     <script>
-      let currentMode = "Debate";
-      let isRecording = false;
-      let mediaRecorder;
-      let audioChunks = [];
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let isPaused = false;
+        let conversationId = null;
+        let timerInterval;
+        let timerSeconds = 0;
+        let currentMode = 'debate'; // Default mode
 
-      function openMode(evt, modeName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].style.display = "none";
-        }
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(modeName).style.display = "block";
-        evt.currentTarget.className += " active";
-        currentMode = modeName;
-      }
+        const recordBtn = document.getElementById('record-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const chatContainer = document.getElementById('chat-container');
+        const audioResponse = document.getElementById('audio-response');
+        const timerDisplay = document.getElementById('timer');
+        const waterCoolerPrompt = document.getElementById('water-cooler-prompt');
+        const randomizePromptBtn = document.getElementById('randomize-prompt');
+        const guidelines = document.getElementById('guidelines');
 
-      document
-        .getElementById("randomize-btn")
-        .addEventListener("click", getNewPrompt);
-      document
-        .getElementById("record-btn")
-        .addEventListener("click", toggleRecording);
-
-      function getNewPrompt() {
-        fetch("/get_prompt")
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("prompt-text").textContent = data.prompt;
-          });
-      }
-
-      function toggleRecording() {
-        if (!isRecording) {
-          startRecording();
-        } else {
-          stopRecording();
-        }
-      }
-
-      function startRecording() {
-        navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-          mediaRecorder = new MediaRecorder(stream, {
-            mimeType: "audio/webm;codecs=opus",
-            audioBitsPerSecond: 128000,
-          });
-          mediaRecorder.start();
-
-          mediaRecorder.addEventListener("dataavailable", (event) => {
-            audioChunks.push(event.data);
-          });
-
-          mediaRecorder.addEventListener("stop", () => {
-            const audioBlob = new Blob(audioChunks, {
-              type: "audio/webm;codecs=opus",
-            });
-            sendAudioToServer(audioBlob);
-          });
-
-          isRecording = true;
-          document.getElementById("record-btn").textContent = "Stop";
+        const tabElements = document.querySelectorAll('.tab');
+        tabElements.forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
         });
-      }
 
-      function stopRecording() {
-        mediaRecorder.stop();
-        isRecording = false;
-        document.getElementById("record-btn").textContent = "Record";
-      }
+        recordBtn.addEventListener('click', toggleRecording);
+        pauseBtn.addEventListener('click', togglePause);
+        submitBtn.addEventListener('click', finishRecording);
+        randomizePromptBtn.addEventListener('click', randomizePrompt);
 
-      function sendAudioToServer(audioBlob) {
-        const formData = new FormData();
-        formData.append("audio", audioBlob, "recording.webm"); // Changed to .webm
-        formData.append("mode", currentMode);
+        const guidelinesContent = {
+            debate: "1. Research your topic thoroughly.<br>2. Structure your arguments logically.<br>3. Use credible sources to support your points.<br>4. Listen carefully to counter-arguments.<br>5. Remain respectful and open-minded.",
+            storytelling: "1. Start with a compelling hook.<br>2. Develop interesting characters.<br>3. Create a clear narrative arc.<br>4. Use descriptive language to paint vivid scenes.<br>5. End with a satisfying conclusion or thought-provoking message.",
+            qa: "Asking Questions:<br>1. Be specific and clear.<br>2. Use open-ended questions to encourage detailed responses.<br>3. Follow up on interesting points.<br>4. Listen actively to responses.<br><br>Answering Questions:<br>1. Provide concise, relevant answers.<br>2. Use examples to illustrate your points.<br>3. If unsure, admit it and offer to find out more.<br>4. Anticipate follow-up questions in your response.",
+            explain: "1. Start with a clear, concise statement of the concept.<br>2. Break down complex ideas into simpler components.<br>3. Use analogies and metaphors to relate to familiar concepts.<br>4. Provide real-world examples to illustrate your points.<br>5. Avoid circular reasoning; ensure each explanation adds new information."
+        };
 
-        fetch("/process_audio", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => {
-            if (!response.ok) {
-              return response.json().then((err) => {
-                throw err;
-              });
+        function switchTab(mode) {
+            currentMode = mode;
+            tabElements.forEach(tab => {
+                if (tab.dataset.tab === mode) {
+                    tab.classList.add('border-b-2', 'border-indigo-500');
+                } else {
+                    tab.classList.remove('border-b-2', 'border-indigo-500');
+                }
+            });
+            guidelines.innerHTML = `<h3 class="font-semibold mb-2">Guidelines for ${mode.charAt(0).toUpperCase() + mode.slice(1)}:</h3><p class="text-sm text-gray-700">${guidelinesContent[mode]}</p>`;
+        }
+
+        function toggleRecording() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
             }
-            return response.json();
-          })
-          .then((data) => {
-            document.getElementById("user-input").textContent = data.user_input;
-            document.getElementById("ai-response").textContent =
-              data.ai_response;
+        }
 
-            const audio = document.getElementById("audio-response");
-            audio.src = "data:audio/mp3;base64," + data.audio_response;
-            audio.play();
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            document.getElementById("user-input").textContent =
-              "Error: " + (error.error || "Failed to process audio");
-            document.getElementById("ai-response").textContent = "";
-            document.getElementById("audio-response").src = "";
-          });
-      }
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
 
-      // Initialize with a prompt and open the Debate tab
-      getNewPrompt();
-      document.getElementsByClassName("tablinks")[0].click();
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    isRecording = true;
+                    recordBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop';
+                    pauseBtn.disabled = false;
+                    submitBtn.disabled = false;
+                    startTimer();
+                });
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            isRecording = false;
+            recordBtn.innerHTML = '<i class="fas fa-microphone mr-2"></i>Record';
+            pauseBtn.disabled = true;
+            submitBtn.disabled = false;
+            stopTimer();
+        }
+
+        function togglePause() {
+            if (isPaused) {
+                mediaRecorder.resume();
+                pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i>Pause';
+                startTimer();
+            } else {
+                mediaRecorder.pause();
+                pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Resume';
+                stopTimer();
+            }
+            isPaused = !isPaused;
+        }
+
+        function finishRecording() {
+            stopRecording();
+            sendAudioToServer();
+        }
+
+        function sendAudioToServer() {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const formData = new FormData();
+            formData.append("audio", audioBlob, "recording.webm");
+            formData.append("mode", currentMode);
+            if (conversationId) {
+                formData.append("conversation_id", conversationId);
+            }
+
+            fetch('/process_audio', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                conversationId = data.conversation_id;
+                displayMessage(data.user_input, 'user');
+                displayMessage(data.ai_response, 'ai');
+                playAudioResponse(data.audio_response);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Error: Failed to process audio");
+            });
+
+            audioChunks = [];
+        }
+
+        function displayMessage(message, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('flex', 'items-start', 'mb-4');
+            
+            const profilePic = document.createElement('div');
+            profilePic.classList.add('w-8', 'h-8', 'rounded-full', 'mr-3', 'flex-shrink-0');
+            profilePic.style.backgroundColor = sender === 'user' ? '#4F46E5' : '#10B981';
+
+            const textContainer = document.createElement('div');
+            textContainer.classList.add('bg-gray-100', 'rounded', 'px-4', 'py-2', 'max-w-3/4');
+            textContainer.textContent = message;
+
+            messageElement.appendChild(profilePic);
+            messageElement.appendChild(textContainer);
+
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function playAudioResponse(audioData) {
+            audioResponse.src = "data:audio/mp3;base64," + audioData;
+            audioResponse.style.display = 'block';
+            audioResponse.play();
+        }
+
+        function startTimer() {
+            stopTimer(); // Clear any existing interval
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const seconds = (timerSeconds % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${minutes}:${seconds}`;
+        }
+
+        function randomizePrompt() {
+            const prompts = [
+                "If you could have dinner with any historical figure, who would it be and why?",
+                "What's the most interesting place you've ever visited?",
+                "If you could learn any skill instantly, what would it be?",
+                "What's your favorite book and why do you love it?",
+                "If you could live in any fictional universe, which one would you choose?",
+                "What's the best piece of advice you've ever received?",
+                "If you could solve one global problem, what would it be and how would you approach it?",
+                "What's your favorite childhood memory?",
+                "If you could have any superpower, what would it be and how would you use it?",
+                "What's the most interesting fact you know?"
+            ];
+            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            waterCoolerPrompt.textContent = randomPrompt;
+        }
+
+        // Initialize with debate tab selected
+        switchTab('debate');
     </script>
-  </body>
+</body>
 </html>

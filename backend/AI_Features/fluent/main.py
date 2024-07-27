@@ -2,10 +2,9 @@ from flask import Flask, request, jsonify, render_template
 from google.cloud import speech, texttospeech
 import google.generativeai as genai
 import os
-import io
 import tempfile
 import base64
-import random
+import uuid
 
 app = Flask(__name__)
 
@@ -14,20 +13,30 @@ speech_client = speech.SpeechClient()
 tts_client = texttospeech.TextToSpeechClient()
 
 # Initialize Gemini API
-genai.configure(api_key=)
-model = genai.GenerativeModel("gemini-pro")
+genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+model = genai.GenerativeModel('gemini-pro')
 
+# Store conversations
+conversations = {}
 
 def transcribe_audio(audio_content):
     audio = speech.RecognitionAudio(content=audio_content)
     config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=24000,
+        encoding=speech.RecognitionConfig.AudioEncoding.WEBM_OPUS,
+        sample_rate_hertz=48000,
         language_code="en-US",
     )
-    response = speech_client.recognize(config=config, audio=audio)
-    return response.results[0].alternatives[0].transcript
-
+    
+    try:
+        response = speech_client.recognize(config=config, audio=audio)
+        
+        if not response.results:
+            return None
+        
+        return response.results[0].alternatives[0].transcript
+    except Exception as e:
+        print(f"Transcription error: {str(e)}")
+        return None
 
 def synthesize_text(text):
     input_text = texttospeech.SynthesisInput(text=text)
@@ -42,49 +51,26 @@ def synthesize_text(text):
     response = tts_client.synthesize_speech(
         input=input_text, voice=voice, audio_config=audio_config
     )
-    return base64.b64encode(response.audio_content).decode("utf-8")
+    return base64.b64encode(response.audio_content).decode('utf-8')
 
-
-def gemini_process(user_input, mode):
+def generate_ai_response(conversation_id, user_input, mode):
+    if conversation_id not in conversations:
+        conversations[conversation_id] = model.start_chat(history=[])
+    
+    chat = conversations[conversation_id]
+    
     prompt = f"""
-    Respond to the user's input in a conversational manner, keeping the response around 5 seconds long when spoken.
-    Focus on the following mode: {mode}
-
-    1. Debate/Defend: Provide a counterargument or supporting argument.
-    2. Narrate/Storytell: Create a brief narrative or story element related to the input.
-    3. Explain: Use a metaphor or analogy to explain the concept.
-    4. Question Formation/Answering: Generate a relevant question or provide a concise answer.
+    You are an AI communication assistant. Based on the user's input, your task is to {mode}. 
+    Respond in a way that encourages further conversation and helps the user improve their communication skills.
+    Keep your response concise, around 2-3 sentences.
 
     User input: {user_input}
+
+    Your response:
     """
-    response = model.generate_content(prompt)
-    return response.text
-
-
-
-
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-def transcribe_audio(audio_content):
-    audio = speech.RecognitionAudio(content=audio_content)
-    config = speech.RecognitionConfig(
-        encoding=speech.RecognitionConfig.AudioEncoding.WEBM_OPUS,
-        sample_rate_hertz=48000,  # Updated to match the WEBM OPUS header
-        language_code="en-US",
-    )
     
-    try:
-        response = speech_client.recognize(config=config, audio=audio)
-        
-        if not response.results:
-            return None  # Return None if no transcription is available
-        
-        return response.results[0].alternatives[0].transcript
-    except Exception as e:
-        print(f"Transcription error: {str(e)}")
-        return None
+    response = chat.send_message(prompt)
+    return response.text
 
 @app.route('/process_audio', methods=['POST'])
 def process_audio():
@@ -92,7 +78,8 @@ def process_audio():
         return jsonify({'error': 'No audio file provided'}), 400
     
     audio_file = request.files['audio']
-    mode = request.form.get('mode', 'Debate')  # Default to 'Debate' if no mode is provided
+    mode = request.form.get('mode', 'have a general conversation about')
+    conversation_id = request.form.get('conversation_id', str(uuid.uuid4()))
     
     audio_data = audio_file.read()
     
@@ -103,26 +90,19 @@ def process_audio():
             'error': 'Could not transcribe audio. Please try speaking more clearly or for a longer duration.'
         }), 400
     
-    ai_response = gemini_process(user_input, mode)
+    ai_response = generate_ai_response(conversation_id, user_input, mode)
     audio_response = synthesize_text(ai_response)
     
     return jsonify({
+        'conversation_id': conversation_id,
         'user_input': user_input,
         'ai_response': ai_response,
         'audio_response': audio_response
     })
 
-@app.route("/get_prompt", methods=["GET"])
-def get_prompt():
-    prompts = [
-        "Discuss a recent technological advancement that excites you.",
-        "Share your thoughts on the future of remote work.",
-        "What's a book or movie that has greatly influenced your thinking?",
-        "Describe an interesting cultural tradition from your background.",
-        "If you could solve one global problem, what would it be and why?",
-    ]
-    return jsonify({"prompt": random.choice(prompts)})
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

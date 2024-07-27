@@ -103,16 +103,20 @@ def optimize_for_marketing(user_input):
     response = model.generate_content(prompt)
     return response.text
 
+
 DEBUG_MODE = True
+
 
 def debug_print(message):
     """Prints a debug message if DEBUG_MODE is True."""
     if DEBUG_MODE:
         print(message)
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/process_story", methods=["POST"])
 def process_story():

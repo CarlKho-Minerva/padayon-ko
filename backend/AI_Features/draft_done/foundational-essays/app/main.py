@@ -83,7 +83,7 @@ def refine_and_optimize_essay(essay, prompt_type):
 
 def format_essay(essay):
     formatPrompt = f"""
-    Format this essay with proper paragraph structure and punctuation. Remove any markdown indicators and ensure it's in plain text format.
+    Remove any markdown indicators and ensure it's in plain text format. Format this essay with proper paragraph structure and punctuation.
 
     Essay: {essay}
 

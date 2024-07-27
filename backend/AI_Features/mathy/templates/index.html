@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Tutor Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto p-4">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden flex">
+            <!-- Chat Interface -->
+            <div class="w-1/2 p-4 border-r">
+                <h2 class="text-2xl font-bold mb-4">Math Tutor Chat</h2>
+                <div id="chat-messages" class="h-96 overflow-y-auto mb-4 p-2 bg-gray-100 rounded"></div>
+                <form id="chat-form" class="flex">
+                    <input type="text" id="user-input" class="flex-grow p-2 border rounded-l"
+                        placeholder="Type your message...">
+                    <button type="submit" class="bg-blue-500 text-white p-2 rounded-r">Send</button>
+                </form>
+            </div>
+
+            <!-- Additional Content -->
+            <div class="w-1/2 p-4">
+                <h2 class="text-2xl font-bold mb-4">Learning Resources</h2>
+                <div id="additional-content">
+                    <!-- Placeholder for additional content -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        let currentAgent = 'greeter';
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (message) {
+                addMessage('user', message);
+                userInput.value = '';
+
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message, agent: currentAgent }),
+                    });
+                    const data = await response.json();
+                    addMessage('bot', data.response);
+
+                    // Simple agent switching logic
+                    switch (currentAgent) {
+                        case 'greeter':
+                            currentAgent = 'interpreter';
+                            break;
+                        case 'interpreter':
+                            currentAgent = 'scenario_generator';
+                            break;
+                        case 'scenario_generator':
+                            currentAgent = 'socratic_guide';
+                            break;
+                        case 'socratic_guide':
+                            currentAgent = 'answer_verifier';
+                            break;
+                        case 'answer_verifier':
+                            currentAgent = 'conclusion_agent';
+                            break;
+                        default:
+                            currentAgent = 'greeter';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage('bot', 'Sorry, there was an error processing your request.');
+                }
+            }
+        });
+
+        function addMessage(sender, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('mb-2', 'p-2', 'rounded', sender === 'user' ? 'bg-blue-100' : 'bg-green-100');
+            messageElement.textContent = `${sender === 'user' ? 'You' : 'Bot'}: ${message}`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

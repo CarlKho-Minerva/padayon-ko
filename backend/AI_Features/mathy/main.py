@@ -1,71 +1,74 @@
-# app.py
+"""
+Install the Google AI Python SDK
 
-from flask import Flask, render_template, request, jsonify
+$ pip install google-generativeai
+
+See the getting started guide for more information:
+https://ai.google.dev/gemini-api/docs/get-started/python
+"""
+
+import os
+
 import google.generativeai as genai
-from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
-app = Flask(__name__)
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
-# Configure the Gemini API (replace with your actual API key)
-genai.configure(api_key="")
+# Create the model
+# See https://ai.google.dev/api/python/google/generativeai/GenerativeModel
+generation_config = {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 64,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
 
-# Initialize the model
-model = genai.GenerativeModel("gemini-1.5-pro")
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-pro",
+    generation_config=generation_config,
+    # safety_settings = Adjust safety settings
+    # See https://ai.google.dev/gemini-api/docs/safety-settings
+    system_instruction="""
+        Imagine you're a specialist in [Future desired job / industry post-grad here]. A job the current student you're facing wants to have. To make this math problem more engaging, rephrase it in the context of the student's desired career: [Future desired job/industry post-grad here].
 
-# Initialize chat history
-chat_history = []
+        Ensure the numerical values and core questions remain unchanged; only modify the context to make it more intriguing for me. Find the answer internally using Code Execution first. Instead of directly providing the answer, keep asking me questions until I give you my input. A call and response scenario.
 
+        Do it in a step-by-step manner. Really breakdown the proble and ask one question at a time instead of giving me the whole formula or spoonfeeding me the given variables.
 
-def process_message(message, agent):
-    global chat_history
+        If I'm confused and you need to provide a formula, make sure to ask me what to do with it. Don't just give it to me. Make me think and engage with the problem. Let me do the plugging of values.
 
-    # Debug print
-    print(f"Agent: {agent}")
-    print(f"Input: {message}")
+        Just make sure to run code execution to verify my answers.
 
-    # Add user message to chat history
-    chat_history.append({"role": "user", "parts": message})
+        End your first response by starting with asking me what to do in the first step and providing the formula and the given.
 
-    # Generate prompt based on agent
-    if agent == "greeter":
-        prompt = f"You are a friendly math tutor. Greet the user and ask about their interests: {message}"
-    elif agent == "interpreter":
-        prompt = (
-            f"Interpret this math question and identify the core concept: {message}"
-        )
-    elif agent == "scenario_generator":
-        prompt = f"Create a real-life scenario based on this math concept and the user's interests: {message}"
-    elif agent == "socratic_guide":
-        prompt = f"Ask a guiding question to help the user understand this concept: {message}"
-    elif agent == "answer_verifier":
-        prompt = f"Verify if this answer is correct (use Python internally if needed): {message}"
-    else:  # conclusion_agent
-        prompt = f"Summarize the learning experience and reinforce the real-life application: {message}"
+        Keep responses humanely short. 2-3 sentences per response.
+        """,
+    tools="code_execution",
+)
 
-    # Generate response
-    response = model.generate_content(prompt)
+chat_session = model.start_chat(history=[])
 
-    # Add model response to chat history
-    chat_history.append({"role": "model", "parts": response.text})
-
-    # Debug print
-    print(f"Output: {response.text}")
-
-    return response.text
+interest = input("What are you interested in? ")
+problem = input(
+    "What is the math problem? If you don't have one, we will give you a sample. Just type 'skip' "
+)
+level = input(
+    "What is kind of math do you want to practice solving? College-level or everyday math? "
+)
 
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+if problem != "skip":
+    prompt_hasProblem = f"I'm interested in {interest}. The math I have to solve is: {problem}. Keep in mind my proficiency level or the type I want to practice on is {level} mathematics."
+    response = chat_session.send_message(prompt_hasProblem)
 
+prompt_noProblem = f"I'm interested in {interest}. Please create a simple sample math problem. Note that my proficiency level or the type I want to practice on is {level} mathematics."
+response = chat_session.send_message(prompt_noProblem)
 
-@app.route("/chat", methods=["POST"])
-def chat():
-    message = request.json["message"]
-    agent = request.json["agent"]
-    response = process_message(message, agent)
-    return jsonify({"response": response})
+print(response.text)
 
-
-if __name__ == "__main__":
-    app.run(port=5000, debug=False)
+while True:
+    user_input = input("You: ")
+    response = chat_session.send_message(user_input)
+    print(f"AI: {response.text}")
+    if "Goodbye" in response.text:
+        break

@@ -15,7 +15,7 @@ app = Flask(__name__)
 # gemini_api_key = os.getenv("GEMINI_API_KEY")
 # print(gemini_api_key)
 
-genai.configure(api_key="AIzaSyDgJ_0xf87nMi-OYpIqo9BA9EZrsYCrlGo")
+genai.configure(api_key="")
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -188,7 +188,7 @@ def refine_and_optimize(bulletPoint, detailedDescription, rawInput):
     Current Description: {detailedDescription}
 
     Remove markdown as we need it in a plain text format.
-    
+
     Provide a refined version of both the bullet point and description, separated by a tilde (~):
 
     Refined Bullet:
@@ -217,6 +217,7 @@ DEBUG_MODE = True
 
 DEBUG_MODE = True  # Set to True for debugging, False to disable debug prints
 
+
 def debug_print(message):
     """Prints a debug message if DEBUG_MODE is True."""
     if DEBUG_MODE:
@@ -225,7 +226,9 @@ def debug_print(message):
 
 def process_achievement(userInput, isEnglish=True, separate_output=False):
     debug_print("\n### Input Processing\n")
-    debug_print(f"Input: {userInput}, Language: {'English' if isEnglish else 'Non-English'}\n")
+    debug_print(
+        f"Input: {userInput}, Language: {'English' if isEnglish else 'Non-English'}\n"
+    )
 
     if isEnglish:
         debug_print("### Cleaning Input\n")
@@ -249,16 +252,22 @@ def process_achievement(userInput, isEnglish=True, separate_output=False):
     debug_print(f"Bullet Point: {bulletPoint}\n")
 
     debug_print("### Generating Detailed Description\n")
-    detailedDescription = generate_detailed_description(bulletPoint, structuredAchievement)
+    detailedDescription = generate_detailed_description(
+        bulletPoint, structuredAchievement
+    )
     debug_print(f"Detailed Description: {detailedDescription}\n")
 
     debug_print("### Refining Achievement\n")
-    refinedAchievement = refine_and_optimize(bulletPoint, detailedDescription, userInput)
+    refinedAchievement = refine_and_optimize(
+        bulletPoint, detailedDescription, userInput
+    )
     debug_print(f"Refined Achievement: {refinedAchievement}\n")
 
     if separate_output:
         debug_print("### Separating Bullet and Description\n")
-        refinedBullet, optimizedDescription = separate_bullet_and_description(refinedAchievement)
+        refinedBullet, optimizedDescription = separate_bullet_and_description(
+            refinedAchievement
+        )
         debug_print(f"Refined Bullet: {refinedBullet}\n")
         debug_print(f"Optimized Description: {optimizedDescription}\n")
         return refinedBullet, optimizedDescription

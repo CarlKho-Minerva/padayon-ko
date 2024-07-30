@@ -15,7 +15,7 @@ app = Flask(__name__)
 # gemini_api_key = os.getenv("GEMINI_API_KEY")
 # print(gemini_api_key)
 
-genai.configure(api_key="")
+genai.configure(api_key="AIzaSyDgJ_0xf87nMi-OYpIqo9BA9EZrsYCrlGo")
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -215,63 +215,54 @@ def separate_bullet_and_description(refined_text):
 DEBUG_MODE = True
 
 
+DEBUG_MODE = True  # Set to True for debugging, False to disable debug prints
+
 def debug_print(message):
     """Prints a debug message if DEBUG_MODE is True."""
     if DEBUG_MODE:
         print(message)
 
 
-# Modify the process_achievement function to use debug_print with clear headers and spacing
 def process_achievement(userInput, isEnglish=True, separate_output=False):
     debug_print("\n### Input Processing\n")
-    debug_print(
-        f"Input: {userInput}, Language: {'English' if isEnglish else 'Non-English'}\n"
-    )
+    debug_print(f"Input: {userInput}, Language: {'English' if isEnglish else 'Non-English'}\n")
 
     if isEnglish:
-        cleanedInput = clean_and_remove_fillers(userInput)
         debug_print("### Cleaning Input\n")
+        cleanedInput = clean_and_remove_fillers(userInput)
         debug_print(f"Cleaned Input: {cleanedInput}\n")
     else:
-        cleanedInput = translate_and_clean(userInput)
         debug_print("### Translating and Cleaning Input\n")
+        cleanedInput = translate_and_clean(userInput)
         debug_print(f"Translated and Cleaned Input: {cleanedInput}\n")
 
-    extractedInfo = extract_key_info(cleanedInput)
     debug_print("### Extracting Information\n")
+    extractedInfo = extract_key_info(cleanedInput)
     debug_print(f"Extracted Info: {extractedInfo}\n")
 
-    structuredAchievement = structure_achievement(extractedInfo)
     debug_print("### Structuring Achievement\n")
+    structuredAchievement = structure_achievement(extractedInfo)
     debug_print(f"Structured Achievement: {structuredAchievement}\n")
 
-    bulletPoint = generate_bullet_point(structuredAchievement)
     debug_print("### Generating Bullet Point\n")
+    bulletPoint = generate_bullet_point(structuredAchievement)
     debug_print(f"Bullet Point: {bulletPoint}\n")
 
-    detailedDescription = generate_detailed_description(
-        bulletPoint, structuredAchievement
-    )
     debug_print("### Generating Detailed Description\n")
+    detailedDescription = generate_detailed_description(bulletPoint, structuredAchievement)
     debug_print(f"Detailed Description: {detailedDescription}\n")
 
-    refinedAchievement = refine_and_optimize(
-        bulletPoint, detailedDescription, userInput
-    )
     debug_print("### Refining Achievement\n")
+    refinedAchievement = refine_and_optimize(bulletPoint, detailedDescription, userInput)
     debug_print(f"Refined Achievement: {refinedAchievement}\n")
 
     if separate_output:
-        # Separate the refined bullet and description if separate_output is True
-        refinedBullet, optimizedDescription = separate_bullet_and_description(
-            refinedAchievement
-        )
         debug_print("### Separating Bullet and Description\n")
+        refinedBullet, optimizedDescription = separate_bullet_and_description(refinedAchievement)
         debug_print(f"Refined Bullet: {refinedBullet}\n")
         debug_print(f"Optimized Description: {optimizedDescription}\n")
         return refinedBullet, optimizedDescription
     else:
-        # Return the combined refined text if separate_output is False
         debug_print("### Combined Refined Text\n")
         debug_print(f"Refined Text: {refinedAchievement}\n")
         return refinedAchievement

@@ -14,7 +14,7 @@ tts_client = texttospeech.TextToSpeechClient()
 
 # Initialize Gemini API
 genai.configure(api_key="")
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("gemini-1.5-pro")
 
 # Store conversations
 conversations = {}
@@ -25,7 +25,7 @@ def transcribe_audio(audio_content):
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.WEBM_OPUS,
         sample_rate_hertz=48000,
-        language_code="en-US",
+        language_code="en-PH",
     )
 
     try:

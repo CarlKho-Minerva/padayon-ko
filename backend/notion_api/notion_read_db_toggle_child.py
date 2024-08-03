@@ -136,10 +136,15 @@ def main():
         page_content = get_page_content(page_id)
         toggle_content = extract_toggle_content(page_content)
 
+        foundational_essay = []
         for toggle_title, children in toggle_content.items():
             print(f"Toggle: {toggle_title}")
             for child in children:
                 print(f"  Child Content: {child}")
+                foundational_essay.append(child)
+                print(f"  Foundational Essay: {foundational_essay}")
+
+        print(foundational_essay)
 
 
 if __name__ == "__main__":

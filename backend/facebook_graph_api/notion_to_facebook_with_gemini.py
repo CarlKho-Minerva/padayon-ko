@@ -4,6 +4,9 @@ import os
 import re
 import google.generativeai as genai
 
+ACCESS_TOKEN = ""
+PAGE_ID = ""
+
 # Initialize Notion client
 notion = Client(auth=os.getenv("NOTION_API_KEY"))
 
@@ -19,7 +22,7 @@ model = genai.GenerativeModel(model_name="gemini-1.5-pro")
 def clean_and_structure_content(content):
     # Define the prompt for the Gemini API
     prompt = f"""
-    Pretend to be an expert Facebook Social Media Manager. Clean and structure the following content for a Facebook post. Ensure the information is easy to skim through and includes clear sections. DO NOT FORMAT WITH ASTERISKS.
+    Pretend to be an expert Facebook Social Media Manager. Clean and structure the following content for a Facebook post. Ensure the information is easy to skim through and includes clear sections. DO NOT USE ASTERISKS.
 
     Content:
     {content}
@@ -134,7 +137,7 @@ def fetch_all_child_blocks(page_id):
     return blocks
 
 
-# Function to fetch page properties, including PublicURL
+# Function to fetch page properties, including PublicURL and cover image
 def fetch_page_properties(page_id):
     try:
         page = notion.pages.retrieve(page_id)
@@ -145,16 +148,46 @@ def fetch_page_properties(page_id):
             .get("rich_text", [{}])[0]
             .get("plain_text", "")
         )
-        return public_url
+        # Get cover image URL
+        cover_image_url = page.get("cover", {}).get("file", {}).get("url", "")
+        # Validate and format the URL
+        if not cover_image_url.lower().startswith(("http://", "https://")):
+            cover_image_url = ""
+        return public_url, cover_image_url
     except Exception as e:
         print(f"An error occurred while fetching page properties: {e}")
-        return ""
+        return "", ""
 
 
-# Function to create a Facebook post
-def create_facebook_post(message, access_token, page_id):
+# Function to download an image from a URL
+def download_image(image_url):
+    if not image_url:
+        print("No image URL provided.")
+        return None
+    try:
+        response = requests.get(image_url)
+        response.raise_for_status()
+        return response.content
+    except Exception as e:
+        print(f"An error occurred while downloading the image: {e}")
+        return None
+
+
+# Function to upload an image to Facebook
+def upload_facebook_image(image_data, access_token):
+    url = f"https://graph.facebook.com/me/photos"
+    payload = {"access_token": access_token}
+    files = {"source": ("cover_image.jpg", image_data, "image/jpeg")}
+    response = requests.post(url, data=payload, files=files)
+    return response.json()
+
+
+# Function to create a Facebook post with an image
+def create_facebook_post(message, access_token, page_id, image_id=None):
     url = f"https://graph.facebook.com/{page_id}/feed"
     payload = {"message": message, "access_token": access_token}
+    if image_id:
+        payload["object_attachment"] = image_id
     response = requests.post(url, data=payload)
     return response.json()
 
@@ -182,25 +215,39 @@ def monitor_notion_database(database_id):
                     # Clean and structure the content using Gemini API
                     structured_message = clean_and_structure_content(content)
 
-                    # Get Notion page URL from PublicURL property
-                    notion_page_url = fetch_page_properties(page_id)
+                    # Get Notion page URL and cover image
+                    notion_page_url, cover_image_url = fetch_page_properties(page_id)
                     if not notion_page_url:
                         notion_page_url = f"https://www.notion.so/{page_id.replace('-', '')}"  # Default URL if PublicURL is not available
+
+                    # Print URL for debugging
+                    print(f"Cover Image URL: {cover_image_url}")
+
+                    # Download cover image
+                    cover_image_data = download_image(cover_image_url)
+
+                    # Upload cover image to Facebook and get image ID
+                    facebook_image_id = None
+                    if cover_image_data:
+                        facebook_image_response = upload_facebook_image(
+                            cover_image_data, ACCESS_TOKEN
+                        )
+                        facebook_image_id = facebook_image_response.get("id")
 
                     # Append the Notion page URL to the end of the structured message
                     final_message = f"{structured_message}\n\nLink to more details: {notion_page_url}"
 
                     # Replace with actual access token and page ID
-                    access_token = ""
-                    page_id = ""
-                    facebook_response = create_facebook_post(
-                        final_message, access_token, page_id
+                    access_token = ACCESS_TOKEN
+                    page_id = PAGE_ID
+                    # Create Facebook post
+                    post_response = create_facebook_post(
+                        final_message, access_token, page_id, facebook_image_id
                     )
-                    print(f"Facebook response: {facebook_response}")
-                else:
-                    print("No content found for the Facebook post.")
+                    print("Facebook post response:", post_response)
+
     except Exception as e:
-        print(f"An error occurred while querying the Notion database: {e}")
+        print(f"An error occurred while monitoring Notion database: {e}")
 
 
 if __name__ == "__main__":

@@ -2,9 +2,45 @@ from notion_client import Client
 import requests
 import os
 import re
+import google.generativeai as genai
 
 # Initialize Notion client
 notion = Client(auth=os.getenv("NOTION_API_KEY"))
+
+# Retrieve the API key from environment variables
+gemini_api_key = os.getenv("GEMINI_API_KEY")
+
+# Configure the Gemini API
+genai.configure(api_key=gemini_api_key)
+model = genai.GenerativeModel(model_name="gemini-1.5-pro")
+
+
+# Function to clean and structure content using Gemini API
+def clean_and_structure_content(content):
+    # Define the prompt for the Gemini API
+    prompt = f"""
+    Pretend to be an expert Facebook Social Media Manager. Clean and structure the following content for a Facebook post. Ensure the information is easy to skim through and includes clear sections. DO NOT FORMAT WITH ASTERISKS.
+
+    Content:
+    {content}
+
+    Structure:
+    - Just use proper spacing.
+    - Provide a clear and concise summary - enough so that their interests will be piqued but make sure it's also informative.
+    - Don't try to bold it because Facebook does not render bold.
+    - Don't use emojis too much it will come off as scammy.
+    """
+
+    try:
+        # Generate content using the Gemini model
+        response = model.generate_content(prompt)
+        structured_content = (
+            response.text.strip()
+        )  # Remove leading and trailing whitespace
+        return structured_content
+    except Exception as e:
+        print(f"An error occurred while calling the Gemini API: {e}")
+        return content  # Return the original content in case of an error
 
 
 # Function to get database ID by title
@@ -98,6 +134,23 @@ def fetch_all_child_blocks(page_id):
     return blocks
 
 
+# Function to fetch page properties, including PublicURL
+def fetch_page_properties(page_id):
+    try:
+        page = notion.pages.retrieve(page_id)
+        properties = page.get("properties", {})
+        # Get PublicURL as plain text
+        public_url = (
+            properties.get("PublicURL", {})
+            .get("rich_text", [{}])[0]
+            .get("plain_text", "")
+        )
+        return public_url
+    except Exception as e:
+        print(f"An error occurred while fetching page properties: {e}")
+        return ""
+
+
 # Function to create a Facebook post
 def create_facebook_post(message, access_token, page_id):
     url = f"https://graph.facebook.com/{page_id}/feed"
@@ -121,20 +174,27 @@ def monitor_notion_database(database_id):
                 print(f"Fetching blocks for page ID: {page_id}")
                 blocks = fetch_all_child_blocks(page_id)
 
-                # Debug: Print each block's data
-                # for block in blocks:
-                # print(f"Block data: {block}")
-
                 content = " ".join([extract_text_from_block(block) for block in blocks])
                 content = re.sub(r"[^\w\s]", "", content)  # Strip special characters
                 print(f"Content extracted from Notion blocks: {content}")
 
                 if content:
+                    # Clean and structure the content using Gemini API
+                    structured_message = clean_and_structure_content(content)
+
+                    # Get Notion page URL from PublicURL property
+                    notion_page_url = fetch_page_properties(page_id)
+                    if not notion_page_url:
+                        notion_page_url = f"https://www.notion.so/{page_id.replace('-', '')}"  # Default URL if PublicURL is not available
+
+                    # Append the Notion page URL to the end of the structured message
+                    final_message = f"{structured_message}\n\nLink to more details: {notion_page_url}"
+
                     # Replace with actual access token and page ID
-                    access_token = "EAALn51qddPIBO3vVPEbS9sB1bdLPMX2lkmBj0ZCNz7bEzlpstZAKnXPGeSzRYWUffXlGEzn5IZC75TLi3mWq233jZBTmoXVBtqIQ2qoCLDRMaoYP5XpyyY6y40ERZAsZAHJZCV78d2ZBke9YdFK1sVHH6FdJCsAWACQQH1essFTHFnAMoN5fWHIdml2B65ZCyAptCFSkqwDxZCbPZBNmphgT64EzvZByw0FZBGojBkMGc1Wzw"
-                    page_id = "394193433777965"
+                    access_token = ""
+                    page_id = ""
                     facebook_response = create_facebook_post(
-                        content, access_token, page_id
+                        final_message, access_token, page_id
                     )
                     print(f"Facebook response: {facebook_response}")
                 else:

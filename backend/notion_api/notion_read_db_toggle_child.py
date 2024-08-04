@@ -61,6 +61,23 @@ def read_notion_database(database_id):
     return results
 
 
+def read_student_achievements_database(database_id):
+    results = []
+    try:
+        # Query the database
+        response = notion.databases.query(
+            **{
+                "database_id": database_id,
+            }
+        )
+
+        results = response.get("results", [])
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    return results
+
+
 def get_page_content(page_id):
     try:
         response = notion.blocks.children.list(block_id=page_id)

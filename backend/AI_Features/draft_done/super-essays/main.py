@@ -1,9 +1,14 @@
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
 import os
 from notion_client import Client
 from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 import google.generativeai as genai
+
+app = Flask(__name__)
+CORS(app)
 
 # Load environment variables
 load_dotenv()
@@ -221,5 +226,67 @@ def main():
     print("\nGenerated Scholarship Application:\n", response.text)
 
 
+# Start flask-related code
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
+
+
+@app.route("/generate_essay", methods=["POST"])
+def generate_essay():
+    data = request.json
+    query = data["query"]
+    selected_essays = data["selected_essays"]
+    selected_achievements = data["selected_achievements"]
+
+    prompt = f"""Based on the following essays and achievements, write a comprehensive scholarship application:
+
+    Essays:
+    {' '.join(selected_essays)}
+
+    Achievements:
+    {' '.join(selected_achievements)}
+
+    Please create a compelling scholarship application that showcases the applicant's qualifications, experiences, and potential."""
+
+    response = GenAI_model.generate_content(prompt)
+
+    # Split the response into title and content
+    essay_parts = response.text.split("~", 1)
+    title = essay_parts[0].strip() if len(essay_parts) > 1 else "Untitled"
+    content = essay_parts[1].strip() if len(essay_parts) > 1 else response.text
+
+    return jsonify({"title": title, "content": content})
+
+
+@app.route("/query_essays_achievements", methods=["POST"])
+def query_essays_achievements():
+    data = request.json
+    query = data["query"]
+
+    essays_db_id = get_database_id("Foundational Essays")
+    achievements_db_id = get_database_id("Student Achievements")
+
+    df_essays = process_foundational_essays(essays_db_id)
+    df_achievements = process_student_achievements(achievements_db_id)
+
+    df_essays["Embeddings"] = df_essays.apply(
+        lambda row: embed_content(row["title"], row["content"]), axis=1
+    )
+    df_achievements["Embeddings"] = df_achievements.apply(
+        lambda row: embed_content(row["title"], row["content"]), axis=1
+    )
+
+    top_essays = find_best_passages(query, df_essays)
+    top_achievements = find_best_passages(query, df_achievements, top_n=5)
+
+    return jsonify(
+        {
+            "essays": top_essays[["title", "content"]].to_dict("records"),
+            "achievements": top_achievements[["title", "content"]].to_dict("records"),
+        }
+    )
+
+
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)

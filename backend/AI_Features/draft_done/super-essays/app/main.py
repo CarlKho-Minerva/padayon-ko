@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import numpy as np
 import pandas as pd
 import google.generativeai as genai
+import uvicorn
 
 app = Flask(__name__)
 CORS(app)
@@ -14,10 +15,10 @@ CORS(app)
 load_dotenv()
 
 # Initialize Notion client
-notion = Client(auth=os.getenv("NOTION_API_KEY"))
+notion = Client(auth=NOTION_API_KEY)
 
 # Initialize Gemini API
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key=GEMINI_API_KEY)
 GenAI_model = genai.GenerativeModel(model_name="gemini-1.5-pro")
 embedding_model = "models/embedding-001"
 
@@ -289,4 +290,4 @@ def query_essays_achievements():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=int(os.environ.get("PORT", 8080)), host="0.0.0.0", debug=True)

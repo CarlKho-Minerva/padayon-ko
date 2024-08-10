@@ -17,3 +17,14 @@ def get_database_id(database_title):
     except Exception as e:
         print(f"An error occurred while searching for the database: {e}")
         return None
+
+
+def update_notion_block(block_id, content):
+    try:
+        notion.blocks.update(
+            block_id=block_id,
+            callout={"rich_text": [{"type": "text", "text": {"content": content}}]},
+        )
+        print("Block updated successfully.")
+    except Exception as e:
+        print(f"An error occurred while updating the block: {e}")

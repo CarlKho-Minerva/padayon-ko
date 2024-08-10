@@ -65,10 +65,3 @@ def generate_short_bio(user_data):
     """
     response = model.generate_content(prompt)
     return response.text
-
-
-print(
-    generate_short_bio(
-        '{{"email": "john.doe@example.com", "name": "John Doe", "career": "Data Scientist", "degree": "Statistics", "achievement": "Published a research paper on machine learning algorithms", "ai": "Enthusiastic about leveraging AI for climate change solutions."}}'
-    )
-)

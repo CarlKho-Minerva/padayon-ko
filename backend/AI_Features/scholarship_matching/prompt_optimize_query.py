@@ -1,27 +1,11 @@
 import google.generativeai as genai
-import os
-import dotenv
+from config import GEMINI_API_KEY
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-# Create the model
-generation_config = {
-    "temperature": 1,
-    "top_p": 0.95,
-    "top_k": 64,
-    "max_output_tokens": 8192,
-    "response_mime_type": "text/plain",
-}
-
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
-    # safety_settings = none
-    tools="code_execution",
-)
+genai.configure(api_key=GEMINI_API_KEY)
 
 
-def generate_query_string(user_data):
+def optimize_query(user_profile):
+    print(f"Optimizing query for user profile.")
     prompt = f"""
     <OBJECTIVE_AND_PERSONA>
     You are a query string optimizer specializing in generating concise, relevant, and effective query strings for scholarship matching.
@@ -66,7 +50,9 @@ def generate_query_string(user_data):
     Generate an optimized query string using the provided user information, keeping it concise, relevant, and within the word limit.
     </RECAP>
 
-    Now, generate a query string using this information: {user_data}
+    Now, generate a query string using this information: {user_profile}
     """
+    model = genai.GenerativeModel("gemini-1.5-pro")
     response = model.generate_content(prompt)
+    print(f"Optimized query: {response.text}")
     return response.text

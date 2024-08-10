@@ -19,7 +19,7 @@ load_dotenv()
 # Retrieve the API key from environment variables
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 
-genai.configure(api_key="")
+genai.configure(api_key="gemini_api_key")
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -28,8 +28,19 @@ safety_settings = [
     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
 ]
 
+# Create the model
+generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 64,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
+
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-pro", safety_settings=safety_settings
+    model_name="gemini-1.5-pro",
+    safety_settings=safety_settings,
+    generation_config=generation_config,
 )
 
 
@@ -260,12 +271,15 @@ def process_belief_challenged_essay(userInput):
     response = model.generate_content(prompt)
     return response.text
 
+
 DEBUG_MODE = True
+
 
 def debug_print(message):
     """Prints a debug message if DEBUG_MODE is True."""
     if DEBUG_MODE:
         print(message)
+
 
 def process_essay(essay_type: str, user_input: str, needs_translation: bool) -> str:
     debug_print("\n### Initial Input\n")

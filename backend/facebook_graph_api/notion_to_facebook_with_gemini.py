@@ -4,7 +4,7 @@ import os
 import re
 import google.generativeai as genai
 
-ACCESS_TOKEN = ""
+FACEBOOK_ACCESS_TOKEN = "EAALn51qddPIBO3vVPEbS9sB1bdLPMX2lkmBj0ZCNz7bEzlpstZAKnXPGeSzRYWUffXlGEzn5IZC75TLi3mWq233jZBTmoXVBtqIQ2qoCLDRMaoYP5XpyyY6y40ERZAsZAHJZCV78d2ZBke9YdFK1sVHH6FdJCsAWACQQH1essFTHFnAMoN5fWHIdml2B65ZCyAptCFSkqwDxZCbPZBNmphgT64EzvZByw0FZBGojBkMGc1Wzw"
 PAGE_ID = ""
 
 # Initialize Notion client
@@ -230,7 +230,7 @@ def monitor_notion_database(database_id):
                     facebook_image_id = None
                     if cover_image_data:
                         facebook_image_response = upload_facebook_image(
-                            cover_image_data, ACCESS_TOKEN
+                            cover_image_data, FACEBOOK_ACCESS_TOKEN
                         )
                         facebook_image_id = facebook_image_response.get("id")
 
@@ -238,7 +238,7 @@ def monitor_notion_database(database_id):
                     final_message = f"{structured_message}\n\nLink to more details: {notion_page_url}"
 
                     # Replace with actual access token and page ID
-                    access_token = ACCESS_TOKEN
+                    access_token = FACEBOOK_ACCESS_TOKEN
                     page_id = PAGE_ID
                     # Create Facebook post
                     post_response = create_facebook_post(

@@ -6,7 +6,7 @@ gemini_api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=gemini_api_key)
 # Create the model
 generation_config = {
-    "temperature": 0.1,
+    "temperature": 0.5,
     "top_p": 0.95,
     "top_k": 64,
     "max_output_tokens": 8192,
@@ -70,6 +70,7 @@ def clean_and_structure_content(content, page_properties):
         Output: 🌟 Calling all women in tech! The XYZ Scholarship awards $10,000 for undergraduates in Computer Science with an AI focus. Comprehensive financial aid, including tuition and allowances, plus career opportunities with Megaworld.
     🗓 Apply by: December 1, 2024
     🎯 Eligibility: 85% GPA in SHS or university.
+    💼 Benefits: $10,000 scholarship, Tuition coverage, Monthly allowance, Internship opportunity.
 
     2. Example #2
         Input:
@@ -83,6 +84,7 @@ def clean_and_structure_content(content, page_properties):
         Output: 🚀 Future STEM leaders, listen up! Full tuition scholarship for high school seniors in Engineering, Math, or Physics. Plus, get paired with an industry mentor to kickstart your career.
     🗓 Apply by: March 15, 2024
     🎯 For: High school seniors with a passion for STEM.
+    💼 Benefits: Full tuition coverage, Mentorship program.
     </FEW_SHOT_EXAMPLES>
 
     <RECAP>

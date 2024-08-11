@@ -5,7 +5,7 @@ import re
 import google.generativeai as genai
 
 FACEBOOK_ACCESS_TOKEN = "EAALn51qddPIBO3vVPEbS9sB1bdLPMX2lkmBj0ZCNz7bEzlpstZAKnXPGeSzRYWUffXlGEzn5IZC75TLi3mWq233jZBTmoXVBtqIQ2qoCLDRMaoYP5XpyyY6y40ERZAsZAHJZCV78d2ZBke9YdFK1sVHH6FdJCsAWACQQH1essFTHFnAMoN5fWHIdml2B65ZCyAptCFSkqwDxZCbPZBNmphgT64EzvZByw0FZBGojBkMGc1Wzw"
-PAGE_ID = ""
+PAGE_ID = "394193433777965"
 
 # Initialize Notion client
 notion = Client(auth=os.getenv("NOTION_API_KEY"))

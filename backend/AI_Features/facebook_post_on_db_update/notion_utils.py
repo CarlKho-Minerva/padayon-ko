@@ -10,6 +10,7 @@ notion = Client(auth=os.getenv("NOTION_API_KEY"))
 
 def get_database_id(database_title):
     try:
+        print(f"Searching for database with title: {database_title}")
         response = notion.search(
             query=database_title, filter={"property": "object", "value": "database"}
         )
@@ -25,6 +26,7 @@ def get_database_id(database_title):
 # Function to extract content from various block types
 def extract_text_from_block(block):
     block_type = block.get("type")
+    print(f"Extracting text from block type: {block_type}")
     if block_type == "paragraph":
         return " ".join(
             [
@@ -84,6 +86,7 @@ def extract_text_from_block(block):
 def fetch_all_child_blocks(page_id):
     blocks = []
     try:
+        print(f"Fetching all child blocks for page ID: {page_id}")
         block_children = notion.blocks.children.list(block_id=page_id)
         while block_children:
             blocks.extend(block_children.get("results", []))
@@ -100,6 +103,7 @@ def fetch_all_child_blocks(page_id):
 
 def extract_page_properties(page_id):
     try:
+        print(f"Extracting properties for page ID: {page_id}")
         page = notion.pages.retrieve(page_id)
         properties = page.get("properties", {})
 
@@ -113,6 +117,7 @@ def extract_page_properties(page_id):
         }
 
         for prop_name, prop_data in properties.items():
+            print(f"Extracting property: {prop_name}")
             if (
                 prop_data.get("type") == "multi_select"
                 and prop_name == "For which major or course?"
@@ -158,6 +163,7 @@ def extract_page_properties(page_id):
 
 def monitor_notion_database(database_id):
     try:
+        print(f"Monitoring Notion database with ID: {database_id}")
         response = notion.databases.query(database_id=database_id)
         results = response.get("results", [])
         for page in results:
@@ -201,7 +207,7 @@ def monitor_notion_database(database_id):
                         )
                         facebook_image_id = facebook_image_response.get("id")
 
-                    final_message = f"{structured_message}\n\nLink to more details: {notion_page_url}"
+                    final_message = f"{structured_message}\n\n🔗 Link to more details: {notion_page_url}"
 
                     post_response = create_facebook_post(
                         final_message, FACEBOOK_ACCESS_TOKEN, PAGE_ID, facebook_image_id

@@ -4,7 +4,17 @@ import google.generativeai as genai
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=gemini_api_key)
-model = genai.GenerativeModel(model_name="gemini-1.5-pro")
+# Create the model
+generation_config = {
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "top_k": 64,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-pro", generation_config=generation_config
+)
 
 
 def clean_and_structure_content(content, page_properties):
@@ -42,19 +52,20 @@ def clean_and_structure_content(content, page_properties):
     1. Use emojis at the start of each key point.
     2. Start with an attention-grabbing phrase.
     3. List key details in bullet points.
-    4. End with the application deadline and a link to more information.
+    4. End with the application deadline.
+    5. DO NOT ADD HYPERLINK AS THIS IS ALREADY HARDCODED.
     </OUTPUT_FORMAT>
 
     <FEW_SHOT_EXAMPLES>
     Here are some examples to guide your responses:
     1. Example #1
         Input:
-        {
+        {{
         "For which major or course?": ["Computer Science", "Artificial Intelligence"],
         "Who can apply?": "Female undergraduates",
         "What do I get?": ["$10,000 scholarship", "Tuition coverage", "Monthly allowance", "Internship opportunity"],
         "Until when can I apply?": "2024-12-01"
-        }
+        }}
         Thoughts: This scholarship is specifically for women in tech, focusing on AI. The financial benefits are comprehensive, and there's a career opportunity included. The deadline is quite far in the future, which is good to mention.
         Output: 🌟 Calling all women in tech! The XYZ Scholarship awards $10,000 for undergraduates in Computer Science with an AI focus. Comprehensive financial aid, including tuition and allowances, plus career opportunities with Megaworld.
     🗓 Apply by: December 1, 2024
@@ -62,12 +73,12 @@ def clean_and_structure_content(content, page_properties):
 
     2. Example #2
         Input:
-        {
+        {{
         "For which major or course?": ["Engineering", "Mathematics", "Physics"],
         "Who can apply?": "High school seniors",
         "What do I get?": ["Full tuition coverage", "Mentorship program"],
         "Until when can I apply?": "2024-03-15"
-        }
+        }}
         Thoughts: This scholarship targets STEM fields and is for high school seniors. The full tuition coverage is a major benefit, and the mentorship program adds value. The deadline is closer than the previous example.
         Output: 🚀 Future STEM leaders, listen up! Full tuition scholarship for high school seniors in Engineering, Math, or Physics. Plus, get paired with an industry mentor to kickstart your career.
     🗓 Apply by: March 15, 2024
@@ -79,10 +90,11 @@ def clean_and_structure_content(content, page_properties):
     1. Keep the summary concise and engaging, highlighting the most appealing aspects of the scholarship.
     2. Always include the application deadline and eligibility criteria.
     3. Use a consistent format with emojis to make the post visually appealing and easy to read.
+    4. DO NOT include a hyperlink section. I have already hardcoded such.
     </RECAP>
 
     Now, it's your turn to craft an engaging Facebook post for the scholarship information provided below:
-    {content} {page_properties}
+    {content} {properties_str}
     """
 
     try:

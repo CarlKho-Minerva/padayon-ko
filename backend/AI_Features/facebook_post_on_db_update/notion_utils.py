@@ -200,7 +200,7 @@ def monitor_notion_database(database_id):
 
                     cover_image_data = download_image(cover_image_url)
 
-                    final_message = f"{structured_message}\n\nLink to more details: {notion_page_url}"
+                    final_message = f"{structured_message}\n\n🔗 Link to more details: {notion_page_url}"
 
                     post_response = create_facebook_post_with_image(
                         final_message, FACEBOOK_ACCESS_TOKEN, PAGE_ID, cover_image_data

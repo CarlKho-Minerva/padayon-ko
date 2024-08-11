@@ -1,6 +1,6 @@
 from notion_client import Client
 import os
-from gemini_utils import clean_and_structure_content
+from prompt_fb_caption import clean_and_structure_content
 from facebook_utils import create_facebook_post, upload_facebook_image, download_image
 from config import FACEBOOK_ACCESS_TOKEN, PAGE_ID
 import re
@@ -98,26 +98,62 @@ def fetch_all_child_blocks(page_id):
     return blocks
 
 
-# Function to fetch page properties, including PublicURL and cover image
-def fetch_page_properties(page_id):
+def extract_page_properties(page_id):
     try:
         page = notion.pages.retrieve(page_id)
         properties = page.get("properties", {})
-        # Get PublicURL as plain text
-        public_url = (
-            properties.get("PublicURL", {})
-            .get("rich_text", [{}])[0]
-            .get("plain_text", "")
-        )
+
+        extracted_properties = {
+            "For which major or course?": [],
+            "Who can apply?": "",
+            "What do I get?": [],
+            "Until when can I apply?": "",
+            "PublicURL": "",
+            "cover_image_url": "",
+        }
+
+        for prop_name, prop_data in properties.items():
+            if (
+                prop_data.get("type") == "multi_select"
+                and prop_name == "For which major or course?"
+            ):
+                extracted_properties[prop_name] = [
+                    option.get("name", "")
+                    for option in prop_data.get("multi_select", [])
+                ]
+            elif prop_data.get("type") == "select" and prop_name == "Who can apply?":
+                extracted_properties[prop_name] = prop_data.get("select", {}).get(
+                    "name", ""
+                )
+            elif (
+                prop_data.get("type") == "multi_select"
+                and prop_name == "What do I get?"
+            ):
+                extracted_properties[prop_name] = [
+                    option.get("name", "")
+                    for option in prop_data.get("multi_select", [])
+                ]
+            elif (
+                prop_data.get("type") == "date"
+                and prop_name == "Until when can I apply?"
+            ):
+                extracted_properties[prop_name] = prop_data.get("date", {}).get(
+                    "start", ""
+                )
+            elif prop_name == "PublicURL":
+                extracted_properties[prop_name] = prop_data.get("rich_text", [{}])[
+                    0
+                ].get("plain_text", "")
+
         # Get cover image URL
         cover_image_url = page.get("cover", {}).get("file", {}).get("url", "")
-        # Validate and format the URL
-        if not cover_image_url.lower().startswith(("http://", "https://")):
-            cover_image_url = ""
-        return public_url, cover_image_url
+        if cover_image_url.lower().startswith(("http://", "https://")):
+            extracted_properties["cover_image_url"] = cover_image_url
+
+        return extracted_properties
     except Exception as e:
-        print(f"An error occurred while fetching page properties: {e}")
-        return "", ""
+        print(f"An error occurred while extracting page properties: {e}")
+        return {}
 
 
 def monitor_notion_database(database_id):
@@ -139,12 +175,20 @@ def monitor_notion_database(database_id):
                 print(f"Content extracted from Notion blocks: {content}")
 
                 if content:
-                    structured_message = clean_and_structure_content(content)
-                    notion_page_url, cover_image_url = fetch_page_properties(page_id)
-                    if not notion_page_url:
-                        notion_page_url = (
-                            f"https://www.notion.so/{page_id.replace('-', '')}"
+                    page_properties = extract_page_properties(page_id)
+                    try:
+                        structured_message = clean_and_structure_content(
+                            content, page_properties
                         )
+                    except Exception as e:
+                        print(f"Error in clean_and_structure_content: {e}")
+                        structured_message = content  # Fallback to original content
+
+                    notion_page_url = (
+                        page_properties.get("PublicURL")
+                        or f"https://www.notion.so/{page_id.replace('-', '')}"
+                    )
+                    cover_image_url = page_properties.get("cover_image_url", "")
 
                     print(f"Cover Image URL: {cover_image_url}")
 

@@ -1,7 +1,7 @@
 from notion_client import Client
 import os
 from prompt_fb_caption import clean_and_structure_content
-from facebook_utils import create_facebook_post, upload_facebook_image, download_image
+from facebook_utils import create_facebook_post_with_image, download_image
 from config import FACEBOOK_ACCESS_TOKEN, PAGE_ID
 import re
 
@@ -200,19 +200,25 @@ def monitor_notion_database(database_id):
 
                     cover_image_data = download_image(cover_image_url)
 
-                    facebook_image_id = None
-                    if cover_image_data:
-                        facebook_image_response = upload_facebook_image(
-                            cover_image_data, FACEBOOK_ACCESS_TOKEN
-                        )
-                        facebook_image_id = facebook_image_response.get("id")
+                    final_message = f"{structured_message}\n\nLink to more details: {notion_page_url}"
 
-                    final_message = f"{structured_message}\n\n🔗 Link to more details: {notion_page_url}"
-
-                    post_response = create_facebook_post(
-                        final_message, FACEBOOK_ACCESS_TOKEN, PAGE_ID, facebook_image_id
+                    post_response = create_facebook_post_with_image(
+                        final_message, FACEBOOK_ACCESS_TOKEN, PAGE_ID, cover_image_data
                     )
                     print("Facebook post response:", post_response)
+
+                    # Update the Notion page to mark it as posted
+                    if post_response and "id" in post_response:
+                        notion.pages.update(
+                            page_id=page_id,
+                            properties={
+                                "facebookPostReady?": {"checkbox": False},
+                                "facebookPostLink": {
+                                    "url": f"https://www.facebook.com/{post_response['id']}"
+                                },
+                            },
+                        )
+                        print(f"Updated Notion page {page_id} to mark as posted")
 
     except Exception as e:
         print(f"An error occurred while monitoring Notion database: {e}")

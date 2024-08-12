@@ -1,8 +1,10 @@
 # Padayon Ko - Scholarships for Filipino
 
+[Click me to access the solution on Notion](https://cvk-minerva.notion.site/Padayun-Ko-Scholarships-for-Filipinos-7095196f76e14daab9a37a910b5a70ed)
+
 ## 📹 Introduction Video
 
-*(Embed your YouTube video here)*
+[![Watch the video](https://i.imgur.com/3IRuTDq.png)](https://youtu.be/MorvT9I0M9I)
 
 ---
 

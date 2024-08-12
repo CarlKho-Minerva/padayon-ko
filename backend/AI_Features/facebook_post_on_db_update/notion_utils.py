@@ -163,7 +163,9 @@ def extract_page_properties(page_id):
 
 def monitor_notion_database(database_id):
     try:
-        print(f"Monitoring Notion database with ID: {database_id}")
+        print(
+            f"\n\n### Starting to monitor the database for scholarship information ###\n\n"
+        )
         response = notion.databases.query(database_id=database_id)
         results = response.get("results", [])
         for page in results:
@@ -172,31 +174,34 @@ def monitor_notion_database(database_id):
                 "checkbox", False
             )
             if facebook_post_ready:
-                page_id = page.get("id")
-                print(f"Fetching blocks for page ID: {page_id}")
-                blocks = fetch_all_child_blocks(page_id)
+                print(f"\n\n### Scholarship details are Facebook post-ready ###\n\n")
+                blocks = fetch_all_child_blocks(page.get("id"))
 
                 content = " ".join([extract_text_from_block(block) for block in blocks])
                 content = re.sub(r"[^\w\s]", "", content)  # Strip special characters
-                print(f"Content extracted from Notion blocks: {content}")
+                print(f"\n\n### Extracted scholarship content: {content} ###\n\n")
 
                 if content:
-                    page_properties = extract_page_properties(page_id)
+                    print(f"\n\n### Extracting page properties ###\n\n")
+                    page_properties = extract_page_properties(page.get("id"))
                     try:
+                        print(
+                            f"\n\n### Using Gemini API to clean and structure content ###\n\n"
+                        )
                         structured_message = clean_and_structure_content(
                             content, page_properties
                         )
                     except Exception as e:
-                        print(f"Error in clean_and_structure_content: {e}")
+                        print(f"\n\n### Error while structuring content: {e} ###\n\n")
                         structured_message = content  # Fallback to original content
 
                     notion_page_url = (
                         page_properties.get("PublicURL")
-                        or f"https://www.notion.so/{page_id.replace('-', '')}"
+                        or f"https://www.notion.so/{page.get('id').replace('-', '')}"
                     )
                     cover_image_url = page_properties.get("cover_image_url", "")
 
-                    print(f"Cover Image URL: {cover_image_url}")
+                    print(f"\n\n### Obtaining cover image for the scholarship ###\n\n")
 
                     cover_image_data = download_image(cover_image_url)
 
@@ -205,20 +210,23 @@ def monitor_notion_database(database_id):
                     post_response = create_facebook_post_with_image(
                         final_message, FACEBOOK_ACCESS_TOKEN, PAGE_ID, cover_image_data
                     )
-                    print("Facebook post response:", post_response)
+                    print(f"\n\n### Facebook post created successfully ###\n\n")
 
                     # Update the Notion page to mark it as posted
                     if post_response and "id" in post_response:
+                        fb_post_url = f"https://www.facebook.com/{post_response['id']}"
                         notion.pages.update(
-                            page_id=page_id,
+                            page_id=page.get("id"),
                             properties={
                                 "facebookPostReady?": {"checkbox": False},
-                                "facebookPostLink": {
-                                    "url": f"https://www.facebook.com/{post_response['id']}"
-                                },
+                                "facebookPostLink": {"url": fb_post_url},
                             },
                         )
-                        print(f"Updated Notion page {page_id} to mark as posted")
+                        print(
+                            f"\n\n### Updated database to mark scholarship as posted ###\n\n"
+                        )
+                        print(f"\n\n### Facebook post URL: {fb_post_url} ###\n\n")
+                        return fb_post_url
 
     except Exception as e:
-        print(f"An error occurred while monitoring Notion database: {e}")
+        print(f"\n\n### An error occurred while monitoring the database: {e} ###\n\n")

@@ -1,98 +1,70 @@
-# Padayon-Ko
+# Padayon Ko - Scholarships for Filipino
 
-Padayon-Ko is a comprehensive application designed to assist users in enhancing and formatting various types of essays and achievements. The application leverages AI to generate content, refine, and optimize user inputs.
+## 📹 Introduction Video
+
+*(Embed your YouTube video here)*
+
+---
+
+## Overview
+
+Padayon Ko (Short for "I will continue" in Cebuano Visayan) is a comprehensive platform designed to help Filipino students secure scholarships from start to finish. By leveraging cutting-edge AI tools and integrations, our platform aims to reduce barriers and provide equal opportunities for all students.
 
 ## Features
 
-### Essay Processing
+### 1. **Scholarship Repository**
 
-The application provides several functions to process different types of essays:
+- **Description**: Lists available scholarships with detailed information including eligibility requirements, document requirements (e.g., English proficiency tests, SAT results), and benefits.
+- **Technology**: Data extracted from Notion and displayed via a user-friendly interface. Information is disseminated through Facebook using automated posting scripts.
+- **Benefits**: Provides students with easy access to a wide range of scholarship opportunities, ensuring they have all necessary information in one place.
 
-- **Format Essay**: Formats an essay with proper paragraph structure and punctuation, removing any markdown indicators to ensure it's in plain text format.
-  - Function: [`format_essay`](backend/AI_Features/foundational-essays/app/main.py)
+### 2. **Profile Building**
 
-- **Process "How Are You Unique?" Essay**: Enhances an essay focusing on unique aspects of background, identity, interests, or talents, and how these contribute to academic or personal goals.
-  - Function: [`process_how_are_you_unique_essay`](backend/AI_Features/foundational-essays/app/main.py)
+- **Achievement Tracker**
+  - **Description**: Allows students to enter their achievements, which are then refined into resume-ready bullet points and descriptions by the AI.
+  - **Technology**: Google Gemini API for transforming raw data into polished achievements. Integration with Notion for storing and managing achievements.
+  - **Benefits**: Helps students present their achievements in a professional format that highlights their impact and skills.
 
-- **Process Community Contribution Essay**: Enhances an essay focusing on specific community service projects, the problems addressed, actions taken, and the impact on the community.
-  - Function: [`process_community_contribution_essay`](backend/AI_Features/foundational-essays/app/main.py)
+- **Essay Writing Assistance**
+  - **Description**: Assists students in crafting responses to common scholarship application questions, ensuring they maintain their unique voice while meeting application standards.
+  - **Technology**: Google Gemini API for AI-assisted essay rewriting and tailoring. Integrated with Notion for managing and storing essays.
+  - **Benefits**: Reduces the stress of writing essays and ensures that applications are well-prepared and compelling.
 
-- **Refine and Optimize Essay**: Refines and optimizes the essay based on the type of prompt.
-  - Function: [`refine_and_optimize_essay`](backend/AI_Features/foundational-essays/app/main.py)
+### 3. **Personalized Recommendations**
 
-### Achievement Processing
+- **Description**: Provides tailored scholarship recommendations based on the student's profile and interests.
+- **Technology**: Google Gemini API for semantic embedding and profile matching. Recommendations are processed and presented via Notion.
+- **Benefits**: Increases the relevance of scholarship opportunities, improving the likelihood of successful applications.
 
-The application also provides functions to process and generate detailed descriptions of achievements:
+### 4. **Test Preparation**
 
-- **Clean and Remove Fillers**: Cleans the input and removes filler words.
-  - Function: [`clean_and_remove_fillers`](backend/AI_Features/bullet_achievements/app/main.py)
+- **MathyYou**
+  - **Description**: An AI-powered math tutor that converts abstract math problems into interest-aligned scenarios.
+  - **Technology**: Google Gemini API for generating and validating math questions. Integration with Python code execution for practice validation.
+  - **Benefits**: Makes studying for math tests engaging and relevant, tailored to the student's interests.
 
-- **Translate and Clean**: Translates non-English input and cleans it.
-  - Function: [`translate_and_clean`](backend/AI_Features/bullet_achievements/app/main.py)
+- **Fluent**
+  - **Description**: Enhances English proficiency through verbal communication practice, including question formation, storytelling, and debate.
+  - **Technology**: Google Chirp for speech-to-text transcription, Google Gemini API for interactive conversation, and Google Synthesize for text-to-speech.
+  - **Benefits**: Improves English skills through practical exercises and real-time feedback.
 
-- **Extract Key Information**: Extracts key information from the cleaned input.
-  - Function: [`extract_key_info`](backend/AI_Features/bullet_achievements/app/main.py)
+### 5. **Application Tracker**
 
-- **Structure Achievement**: Structures the achievement using the X-Y-Z formula.
-  - Function: [`structure_achievement`](backend/AI_Features/bullet_achievements/app/main.py)
+- **Description**: Tracks the status of scholarship applications from submission to acceptance/rejection.
+- **Technology**: Integration with Notion for managing application statuses and updates.
+- **Benefits**: Keeps students informed about their application progress and helps manage deadlines and follow-ups.
 
-- **Generate Bullet Point**: Generates a resume bullet point from the structured achievement.
-  - Function: [`generate_bullet_point`](backend/AI_Features/bullet_achievements/app/main.py)
+## Technical Aspects
 
-- **Generate Detailed Description**: Generates a detailed description of the achievement.
-  - Function: [`generate_detailed_description`](backend/AI_Features/bullet_achievements/app/main.py)
+- **Google Gemini API**: Used for essay rewriting, profile matching, and generating personalized scholarship recommendations. It processes and enhances user data through semantic embeddings and AI-driven prompts.
+- **Notion**: Serves as the primary database and user interface for managing scholarship information, user profiles, achievements, and essays.
+- **Facebook Integration**: Automated posting of scholarship opportunities and updates to reach a wider audience on a platform popular in the Philippines.
+- **Google Chirp and Synthesize**: For speech-to-text and text-to-speech functionalities, facilitating verbal communication practice and essay dictation.
+- **Python**: Employed for code execution and validation of math practice questions.
 
-- **Refine and Optimize**: Refines and optimizes the bullet point and detailed description.
-  - Function: [`refine_and_optimize`](backend/AI_Features/bullet_achievements/app/main.py)
+## Benefits to Users
 
-- **Separate Bullet and Description**: Separates the refined text into bullet points and detailed descriptions.
-  - Function: [`separate_bullet_and_description`](backend/AI_Features/bullet_achievements/app/main.py)
-
-### Notebooks
-
-The project includes several Jupyter notebooks for processing different types of essays:
-
-- [bullet_achievements.ipynb](backend/AI_Features/bullet_achievements.ipynb)
-- [essay_new.ipynb](backend/AI_Features/essay_new.ipynb)
-- [essay_RAG.ipynb](backend/AI_Features/essay_RAG.ipynb)
-- [scholarship_match.ipynb](backend/AI_Features/scholarship_match.ipynb)
-
-## Installation
-
-1. Clone the repository:
-
-    ```sh
-    git clone <repository-url>
-    ```
-
-2. Navigate to the project directory:
-
-    ```sh
-    cd padayon-ko
-    ```
-
-3. Install the required dependencies:
-
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-4. Set up environment variables by creating a `.env` file and adding your API keys:
-
-    ```env
-    GEMINI_API_KEY=your_gemini_api_key
-    ```
-
-## Usage
-
-1. Run the Flask application:
-
-    ```sh
-    python backend/AI_Features/bullet_achievements/app/main.py
-    ```
-
-2. Access the application in your web browser at `http://localhost:5000`.
-
-## License
-
-This project is licensed under the MIT License.
+- **Equal Access**: Reduces barriers to scholarship opportunities by providing a structured, accessible platform for all students.
+- **Comprehensive Support**: Guides users through every step of the scholarship process, from finding opportunities to preparing applications and tests.
+- **Personalized Experience**: Offers tailored recommendations and tools based on individual profiles and interests.
+- **Enhanced Learning**: Provides tools for improving academic and communication skills through engaging, AI-driven methods.

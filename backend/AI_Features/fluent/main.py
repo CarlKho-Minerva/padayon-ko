@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import os
 from speech_utils import transcribe_audio, synthesize_text
-from gemini_utils import generate_ai_response
+from gemini_utils import generate_ai_response, generate_feedback
 import uuid
 
 app = Flask(__name__)
@@ -41,6 +41,16 @@ def process_audio():
             "audio_response": audio_response,
         }
     )
+
+
+@app.route("/get_feedback", methods=["POST"])
+def get_feedback():
+    mode = request.form.get("mode", "general conversation")
+    conversation_id = request.form.get("conversation_id")
+
+    feedback = generate_feedback(conversation_id, mode)
+
+    return jsonify({"feedback": feedback})
 
 
 @app.route("/", methods=["GET"])

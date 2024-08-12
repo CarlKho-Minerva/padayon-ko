@@ -5,12 +5,19 @@ speech_client = speech.SpeechClient()
 tts_client = texttospeech.TextToSpeechClient()
 
 
+from google.cloud import speech, texttospeech
+import base64
+
+speech_client = speech.SpeechClient()
+tts_client = texttospeech.TextToSpeechClient()
+
+
 def transcribe_audio(audio_content):
     audio = speech.RecognitionAudio(content=audio_content)
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.WEBM_OPUS,
         sample_rate_hertz=48000,
-        language_code="en-PH",
+        language_code="en-US",
     )
 
     try:

@@ -7,6 +7,7 @@
     <title>AI Communication Practice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.3/purify.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -18,23 +19,44 @@
             },
         }
     </script>
+
+    <style>
+        .water-cooler-prompt {
+            background-color: #f0f4f8;
+            border-left: 4px solid #60A1E8;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .feedback-container {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 
 <body class="bg-white font-sans">
     <div class="container mx-auto px-4 py-4">
-        <!-- <h1 class="text-3xl font-bold text-center text-accent mb-8">AI Communication Practice</h1> -->
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Water Cooler Section -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4 text-accent">Water Cooler</h2>
-                <p id="water-cooler-prompt" class="text-gray-700 mb-4">Welcome! Let's start a casual conversation.
-                    What's your favorite way to relax after a long day?</p>
+                <h2 class="text-xl font-semibold mb-4 text-accent">Fluent by Padayon Ko</h2>
+                <div id="water-cooler-prompt" class="water-cooler-prompt text-gray-700 mb-4"></div>
                 <button id="randomize-prompt"
                     class="bg-accent text-white px-4 py-2 rounded hover:bg-accent/80 transition">
                     <i class="fas fa-random mr-2"></i>Randomize Prompt
                 </button>
+                <p class="text-sm text-gray-500 mt-2">made with love 🫶 by Carl Kho 2024</p>
+                <div id="feedback-container" class="feedback-container mt-4 hidden">
+                    <h3 class="font-semibold mb-2 text-accent">Conversation Feedback:</h3>
+                    <div id="conversation-feedback" class="text-sm text-gray-700"></div>
+                </div>
             </div>
+
 
             <!-- Main Chat Interface -->
             <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
@@ -76,7 +98,11 @@
                     <div class="flex items-center space-x-2 mb-2 sm:mb-0">
                         <button id="record-btn"
                             class="bg-accent text-white px-4 py-2 rounded hover:bg-accent/80 transition">
-                            <i class="fas fa-microphone mr-2"></i>Record
+                            <i class="fas fa-microphone mr-2"></i>Start Talking
+                        </button>
+                        <button id="end-conversation-btn"
+                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition hidden">
+                            End Convo and Receive Feedback
                         </button>
                     </div>
                     <div id="timer" class="text-xl font-mono text-accent">00:00</div>
@@ -131,26 +157,83 @@
             guidelines.innerHTML = `<h3 class="font-semibold mb-2 text-accent">Guidelines for ${mode.charAt(0).toUpperCase() + mode.slice(1)}:</h3><p class="text-sm text-gray-700">${guidelinesContent[mode]}</p>`;
         }
 
+
+        function randomizePrompt() {
+            const prompts = [
+                "If you could have dinner with any historical figure, who would it be and why?",
+                "What's the most interesting place you've ever visited?",
+                "If you could learn any skill instantly, what would it be?",
+                "What's your favorite book and why do you love it?",
+                "If you could live in any fictional universe, which one would you choose?",
+                "What's the best piece of advice you've ever received?",
+                "If you could solve one global problem, what would it be and how would you approach it?",
+                "What's your favorite childhood memory?",
+                "If you could have any superpower, what would it be and how would you use it?",
+                "What's the most interesting fact you know?"
+            ];
+            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            waterCoolerPrompt.innerHTML = `<strong>Let's start with:</strong> ${randomPrompt}`;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            randomizePrompt();
+            switchTab('debate'); // Initialize with debate tab selected
+        });
+
+        const endConversationBtn = document.getElementById('end-conversation-btn');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const conversationFeedback = document.getElementById('conversation-feedback');
+
+        endConversationBtn.addEventListener('click', endConversation);
+
         function toggleRecording() {
             if (!isRecording) {
                 startRecording();
+                endConversationBtn.classList.remove('hidden');
             } else {
                 stopRecording();
             }
         }
 
+        function endConversation() {
+            stopRecording();
+            endConversationBtn.classList.add('hidden');
+            getFeedback();
+        }
+
+        function getFeedback() {
+            const formData = new FormData();
+            formData.append("mode", currentMode);
+            formData.append("conversation_id", conversationId);
+
+            fetch('/get_feedback', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Sanitize the HTML feedback before inserting it
+                    const sanitizedFeedback = DOMPurify.sanitize(data.feedback);
+                    conversationFeedback.innerHTML = sanitizedFeedback;
+                    feedbackContainer.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error getting feedback:', error);
+                });
+        }
+
         function startRecording() {
+            audioChunks = []; // Clear the audioChunks array
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
                     mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.start();
-
                     mediaRecorder.addEventListener("dataavailable", event => {
                         audioChunks.push(event.data);
                     });
-
+                    mediaRecorder.start();
                     isRecording = true;
-                    recordBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop';
+                    recordBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Reply to AI';
                     startTimer();
                 });
         }
@@ -224,8 +307,21 @@
         function playAudioResponse(audioData) {
             audioResponse.src = "data:audio/mp3;base64," + audioData;
             audioResponse.style.display = 'block';
-            audioResponse.play();
+
+            // Attempt to autoplay
+            audioResponse.play().catch(error => {
+                console.warn('Autoplay was prevented. User interaction may be required.');
+                // You might want to show a play button or message to the user here
+            });
         }
+
+        // Add event listener for user interaction
+        document.body.addEventListener('click', function () {
+            audioResponse.play().catch(error => {
+                console.warn('Autoplay after user interaction failed:', error);
+            });
+        }, { once: true });
+
 
         function startTimer() {
             stopTimer(); // Clear any existing interval
@@ -245,23 +341,6 @@
             const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
             const seconds = (timerSeconds % 60).toString().padStart(2, '0');
             timerDisplay.textContent = `${minutes}:${seconds}`;
-        }
-
-        function randomizePrompt() {
-            const prompts = [
-                "If you could have dinner with any historical figure, who would it be and why?",
-                "What's the most interesting place you've ever visited?",
-                "If you could learn any skill instantly, what would it be?",
-                "What's your favorite book and why do you love it?",
-                "If you could live in any fictional universe, which one would you choose?",
-                "What's the best piece of advice you've ever received?",
-                "If you could solve one global problem, what would it be and how would you approach it?",
-                "What's your favorite childhood memory?",
-                "If you could have any superpower, what would it be and how would you use it?",
-                "What's the most interesting fact you know?"
-            ];
-            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-            waterCoolerPrompt.textContent = randomPrompt;
         }
 
         // Initialize with debate tab selected

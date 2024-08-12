@@ -59,9 +59,10 @@
 
 <body class="bg-gray-50 font-sans px-20">
     <div class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
             <!-- Chat Column -->
-            <div class="lg:col-span-2 bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="lg:col-span-1 bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="p-6 bg-primary text-white">
                     <h2 class="text-2xl font-medium">MathyYou: Interest-aligned Math Practice</h2>
                 </div>
@@ -84,7 +85,7 @@
             </div>
 
             <!-- Tools Column -->
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <!-- Calculators -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <button id="calculators-toggle" class="w-full p-4 text-left focus:outline-none"
@@ -144,7 +145,7 @@
                                 onclick="showInterpreter('sagemath')">SageMath</button>
                         </div>
                         <div id="interpreter-content" class="bg-gray-50 rounded-lg h-[50vh] overflow-hidden">
-                            <iframe id="python-interpreter" src="https://trinket.io/embed/python3" width="100%"
+                            <iframe id="python-interpreter" src="https://www.online-python.com/" width="100%"
                                 height="100%" style="border:none;"></iframe>
                             <iframe id="sagemath-interpreter" src="https://sagecell.sagemath.org/" width="100%"
                                 height="100%" style="border:none; display:none;"></iframe>

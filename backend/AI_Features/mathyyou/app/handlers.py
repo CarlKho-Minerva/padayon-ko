@@ -1,6 +1,4 @@
 from flask import jsonify
-
-
 from chat import create_chat_session, get_chat_session, chat_sessions
 
 

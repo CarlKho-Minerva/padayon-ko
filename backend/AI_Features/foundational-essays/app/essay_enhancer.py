@@ -1,5 +1,79 @@
 from config import model
 
+obvious_ai_indicators = """
+Transitional words overused by ChatGPT
+Accordingly
+Additionally
+Arguably
+Certainly
+Consequently
+Hence
+However
+Indeed
+Moreover
+Nevertheless
+Nonetheless
+Notwithstanding
+Thus
+Undoubtedly
+Adjectives overused by ChatGPT
+Adept
+Commendable
+Dynamic
+Efficient
+Ever-evolving
+Exciting
+Exemplary
+Innovative
+Invaluable
+Robust
+Seamless
+Synergistic
+Thought-provoking
+Transformative
+Utmost
+Vibrant
+Vital
+Nouns overused by ChatGPT
+Efficiency
+Innovation
+Institution
+Integration
+Implementation
+Landscape
+Optimization
+Realm
+Tapestry
+Transformation
+Verbs overused by ChatGPT
+Aligns
+Augment
+Delve
+Embark
+Facilitate
+Maximize
+Underscores
+Utilize
+Phrases overused by ChatGPT
+A testament to…
+In conclusion…
+In summary…
+It’s important to note/consider…
+It’s worth noting that…
+On the contrary…
+This is not an exhaustive list.
+Examples of data analysis phrases overused by ChatGPT:
+“Deliver actionable insights through in-depth data analysis”
+“Drive insightful data-driven decisions”
+“Leveraging data-driven insights”
+“Leveraging complex datasets to extract meaningful insights”
+Other signs that text may have been written by ChatGPT:
+Overly complex sentence structures
+An unusually formal tone in text that’s supposed to be conversational or casual — or, an overly casual tone for a text that’s supposed to be formal or business casual
+Unnecessarily long and wordy
+Vague statements
+"""
+
 
 def process_essay_by_type(essay_type: str, cleaned_essay: str) -> str:
     processing_functions = {
@@ -31,6 +105,7 @@ def refine_and_optimize_essay(essay, prompt_type):
     3. Maintain authenticity and original voice
     4. Ensure relevance to the specific prompt
     5. Avoid clichés and overly formal language
+    6. NEVER UNDER ANY CIRCUMSTANCES USE THESE WORDS FOCUS ON NUANCE AND HUMAN WRITING {obvious_ai_indicators}
 
     Essay: {essay}
 
@@ -176,18 +251,67 @@ def process_sports_impact_essay(userInput):
 
 
 def process_why_study_pursue_essay(userInput):
-    prompt = f"""
-    Enhance this "Why Do You Want to Study/Pursue [X]?" essay. Focus on:
-    1. Specific field of study or career path
-    2. Experiences that sparked interest in this field
-    3. Relevant skills or knowledge already acquired
-    4. Future goals related to this field
-    5. Potential impact or contribution to the field
+    prompt = f"""<OBJECTIVE_AND_PERSONA>
+    You are a college application essay coach. Your task is to help students craft compelling essays explaining why they want to study a particular major, without writing the essay for them.
+    </OBJECTIVE_AND_PERSONA>
 
-    Essay: {userInput}
+    <INSTRUCTIONS>
+    To complete the task, follow these steps:
+    1. Imagine a mini-movie of the moments that led you to your interest and create a simple, bullet point outline.
+    2. Put your moments (aka the “scenes” of your mini-movie) in chronological order.
+    3. Decide if you want to include a specific thesis that explicitly states your central argument—in this case what you want to study and why.
+    </INSTRUCTIONS>
 
-    Enhanced essay:
+    <CONSTRAINTS>
+    Please adhere to the following dos and don'ts:
+    1. Do: Make uncommon connections and provide specific examples.
+    2. Do: Ensure the essay is personal and reflective of the student’s unique journey.
+    3. Don’t: Use clichéd phrases or general statements without supporting details.
+    4. Don’t: Write the essay in a way that could apply to any student.
+    </CONSTRAINTS>
+
+    <CONTEXT>
+    Here is the context you need to know:
+    Students need to demonstrate their passion and understanding of the major they are interested in, while connecting it to their personal experiences and future goals.
+    </CONTEXT>
+
+    <OUTPUT_FORMAT>
+    The output should be formatted as follows:
+    1. Introduction with a hook or thesis statement.
+    2. Body paragraphs detailing the chronological moments that led to their interest.
+    3. Conclusion that ties back to the introduction and summarizes their goals.
+    </OUTPUT_FORMAT>
+
+    <FEW_SHOT_EXAMPLES>
+    Here are some examples to guide your responses:
+    1. Example #1
+        Input: "Why Biology?"
+        Thoughts: Consider the student’s unique experiences that led to their interest in Biology, avoiding common phrases and making uncommon connections.
+        Output:
+        - Elementary school: Getting my first dinosaur toy and reading dinosaur books
+        - Middle school: Visiting museums, seeing water under a microscope
+        - High school: Doing online research, getting internship where we analyzed brainwaves and dissected a stingray
+        Thesis: I want to study Biology because it has always fascinated me, from playing with dinosaur toys to analyzing brainwaves in a lab.
+    2. Example #2
+        Input: "Why Electrical Engineering?"
+        Thoughts: Focus on specific instances that highlight the student’s interest in improving security technology.
+        Output:
+        - Thesis: I want to improve security through technology
+        - Robbers broke into dad’s restaurant
+        - Cousin taught me about Autonomous Systems
+        - In the future: work with large companies or on national security
+    </FEW_SHOT_EXAMPLES>
+
+    <RECAP>
+    To summarize, remember the key points:
+    1. Create a chronological outline of moments that led to the interest.
+    2. Make uncommon connections and provide specific examples.
+    3. Format the essay with a clear introduction, body, and conclusion.
+    </RECAP>
+
+    Now, process this: {userInput}.
     """
+
     response = model.generate_content(prompt)
     return response.text
 

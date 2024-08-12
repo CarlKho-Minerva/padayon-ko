@@ -121,13 +121,17 @@
             const essayList = document.getElementById('essayList');
             essayList.innerHTML = '';
             essays.forEach((essay, index) => {
+                const firstSentence = essay.content.substring(0, 100) + '...';
                 const div = document.createElement('div');
                 div.innerHTML = `
-                    <label class="flex items-center space-x-2">
-                        <input type="checkbox" class="form-checkbox text-primary" onchange="toggleEssay(${index}, this.checked)">
+                <label class="flex items-start space-x-2">
+                    <input type="checkbox" class="form-checkbox text-primary mt-1" onchange="toggleEssay(${index}, this.checked)">
+                    <div class="flex flex-col space-y-1">
                         <span>${essay.title}</span>
-                    </label>
-                `;
+                        <span class="text-gray-500">${firstSentence}</span>
+                    </div>
+                </label>
+            `;
                 essayList.appendChild(div);
             });
         }
@@ -138,7 +142,7 @@
             achievements.forEach((achievement, index) => {
                 const div = document.createElement('div');
                 div.innerHTML = `
-                    <label class="flex items-center space-x-2">
+                    <label class="flex items-start space-x-2">
                         <input type="checkbox" class="form-checkbox text-primary" onchange="toggleAchievement(${index}, this.checked)">
                         <span>${achievement.title}</span>
                     </label>

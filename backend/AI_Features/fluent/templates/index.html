@@ -21,8 +21,13 @@
 </head>
 
 <body class="bg-white font-sans">
+<<<<<<< HEAD
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-center text-accent mb-8">AI Communication Practice</h1>
+=======
+    <div class="container mx-auto px-4 py-4">
+        <!-- <h1 class="text-3xl font-bold text-center text-accent mb-8">AI Communication Practice</h1> -->
+>>>>>>> 285718a86c7daea05ec1d96f9fc186a7603a60ac
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Water Cooler Section -->
@@ -67,7 +72,7 @@
                 </div>
 
                 <!-- Chat Container -->
-                <div id="chat-container" class="h-80 overflow-y-auto border border-gray-300 rounded p-4 mb-4">
+                <div id="chat-container" class="h-64 overflow-y-auto border border-gray-300 rounded p-4 mb-4">
                     <!-- Messages will be appended here -->
                 </div>
 
@@ -103,6 +108,24 @@
         const waterCoolerPrompt = document.getElementById('water-cooler-prompt');
         const randomizePromptBtn = document.getElementById('randomize-prompt');
         const guidelines = document.getElementById('guidelines');
+
+        const prompts = [
+            "What are your thoughts on remote work? How has it affected work-life balance?",
+            "If you could redesign the education system, what changes would you make and why?",
+            "How do you think artificial intelligence will impact job markets in the next decade?",
+            "What's your stance on universal basic income? What potential benefits or drawbacks do you see?",
+            "How do you think social media has influenced modern relationships and communication?",
+            "What role should governments play in addressing climate change?",
+            "How do you think space exploration will evolve in the next 50 years?",
+            "What are your thoughts on the current state of healthcare? How would you improve it?",
+            "How do you think technology has changed the way we consume and create art?",
+            "What do you think are the biggest ethical challenges facing society today?",
+            "How do you think the concept of privacy will evolve in an increasingly digital world?",
+            "What role should ethics play in scientific research and technological advancement?",
+            "How do you think globalization has affected local cultures and economies?",
+            "What are your thoughts on the future of transportation? How might we travel in 50 years?",
+            "How do you think we can balance economic growth with environmental sustainability?"
+        ];
 
         const tabElements = document.querySelectorAll('.tab');
         tabElements.forEach(tab => {
@@ -221,10 +244,20 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function playAudioResponse(audioData) {
-            audioResponse.src = "data:audio/mp3;base64," + audioData;
-            audioResponse.style.display = 'block';
-            audioResponse.play();
+        function playAudioResponse(audioUrl) {
+            const audio = new Audio(audioUrl);
+            audio.autoplay = true;
+            audio.play()
+                .then(() => {
+                    console.log('Audio is playing');
+                })
+                .catch(error => {
+                    console.error('Error playing audio:', error);
+                    // Handle autoplay restrictions
+                    if (error.name === 'NotAllowedError' || error.name === 'NotSupportedError') {
+                        alert('Please interact with the page to enable audio playback.');
+                    }
+                });
         }
 
         function startTimer() {
@@ -248,24 +281,14 @@
         }
 
         function randomizePrompt() {
-            const prompts = [
-                "If you could have dinner with any historical figure, who would it be and why?",
-                "What's the most interesting place you've ever visited?",
-                "If you could learn any skill instantly, what would it be?",
-                "What's your favorite book and why do you love it?",
-                "If you could live in any fictional universe, which one would you choose?",
-                "What's the best piece of advice you've ever received?",
-                "If you could solve one global problem, what would it be and how would you approach it?",
-                "What's your favorite childhood memory?",
-                "If you could have any superpower, what would it be and how would you use it?",
-                "What's the most interesting fact you know?"
-            ];
             const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
             waterCoolerPrompt.textContent = randomPrompt;
         }
 
         // Initialize with debate tab selected
         switchTab('debate');
+        // Call randomizePrompt when the page loads
+        window.addEventListener('load', randomizePrompt);
     </script>
 </body>
 

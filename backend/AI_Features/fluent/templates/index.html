@@ -1,49 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Communication Practice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#60A1E8',
+                    },
+                },
+            },
+        }
+    </script>
 </head>
-<body class="bg-gray-100 font-sans">
+
+<body class="bg-white font-sans">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-8">AI Communication Practice</h1>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <h1 class="text-3xl font-bold text-center text-accent mb-8">AI Communication Practice</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Water Cooler Section -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold mb-4">Water Cooler</h2>
-                <p id="water-cooler-prompt" class="text-gray-700 mb-4">Welcome! Let's start a casual conversation. What's your favorite way to relax after a long day?</p>
-                <button id="randomize-prompt" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+                <h2 class="text-xl font-semibold mb-4 text-accent">Water Cooler</h2>
+                <p id="water-cooler-prompt" class="text-gray-700 mb-4">Welcome! Let's start a casual conversation.
+                    What's your favorite way to relax after a long day?</p>
+                <button id="randomize-prompt"
+                    class="bg-accent text-white px-4 py-2 rounded hover:bg-accent/80 transition">
                     <i class="fas fa-random mr-2"></i>Randomize Prompt
                 </button>
             </div>
 
             <!-- Main Chat Interface -->
-            <div class="md:col-span-2 bg-white rounded-lg shadow-md p-6">
+            <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
                 <!-- Tabs -->
                 <div class="mb-4">
-                    <ul class="flex border-b">
+                    <ul class="flex flex-wrap border-b">
                         <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="debate">Debate</a>
+                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                data-tab="debate">Debate</a>
                         </li>
                         <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="storytelling">Storytelling</a>
+                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                data-tab="storytelling">Storytelling</a>
                         </li>
                         <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="qa">Q&A</a>
+                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                data-tab="qa">Q&A</a>
                         </li>
                         <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-indigo-500 hover:text-indigo-800 font-semibold cursor-pointer tab" data-tab="explain">Explain</a>
+                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                data-tab="explain">Explain</a>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Guidelines -->
                 <div id="guidelines" class="mb-4 p-4 bg-gray-100 rounded">
-                    <h3 class="font-semibold mb-2">Guidelines:</h3>
+                    <h3 class="font-semibold mb-2 text-accent">Guidelines:</h3>
                     <p class="text-sm text-gray-700">Select a mode to see specific guidelines.</p>
                 </div>
 
@@ -53,19 +72,14 @@
                 </div>
 
                 <!-- Controls -->
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center space-x-2">
-                        <button id="record-btn" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition">
+                <div class="flex flex-col sm:flex-row items-center justify-between mb-4">
+                    <div class="flex items-center space-x-2 mb-2 sm:mb-0">
+                        <button id="record-btn"
+                            class="bg-accent text-white px-4 py-2 rounded hover:bg-accent/80 transition">
                             <i class="fas fa-microphone mr-2"></i>Record
                         </button>
-                        <button id="pause-btn" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition" disabled>
-                            <i class="fas fa-pause mr-2"></i>Pause
-                        </button>
-                        <button id="submit-btn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition" disabled>
-                            <i class="fas fa-paper-plane mr-2"></i>Submit
-                        </button>
                     </div>
-                    <div id="timer" class="text-xl font-mono">00:00</div>
+                    <div id="timer" class="text-xl font-mono text-accent">00:00</div>
                 </div>
 
                 <audio id="audio-response" controls class="w-full"></audio>
@@ -77,15 +91,12 @@
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
-        let isPaused = false;
         let conversationId = null;
         let timerInterval;
         let timerSeconds = 0;
         let currentMode = 'debate'; // Default mode
 
         const recordBtn = document.getElementById('record-btn');
-        const pauseBtn = document.getElementById('pause-btn');
-        const submitBtn = document.getElementById('submit-btn');
         const chatContainer = document.getElementById('chat-container');
         const audioResponse = document.getElementById('audio-response');
         const timerDisplay = document.getElementById('timer');
@@ -99,27 +110,25 @@
         });
 
         recordBtn.addEventListener('click', toggleRecording);
-        pauseBtn.addEventListener('click', togglePause);
-        submitBtn.addEventListener('click', finishRecording);
         randomizePromptBtn.addEventListener('click', randomizePrompt);
 
         const guidelinesContent = {
-            debate: "1. Research your topic thoroughly.<br>2. Structure your arguments logically.<br>3. Use credible sources to support your points.<br>4. Listen carefully to counter-arguments.<br>5. Remain respectful and open-minded.",
-            storytelling: "1. Start with a compelling hook.<br>2. Develop interesting characters.<br>3. Create a clear narrative arc.<br>4. Use descriptive language to paint vivid scenes.<br>5. End with a satisfying conclusion or thought-provoking message.",
-            qa: "Asking Questions:<br>1. Be specific and clear.<br>2. Use open-ended questions to encourage detailed responses.<br>3. Follow up on interesting points.<br>4. Listen actively to responses.<br><br>Answering Questions:<br>1. Provide concise, relevant answers.<br>2. Use examples to illustrate your points.<br>3. If unsure, admit it and offer to find out more.<br>4. Anticipate follow-up questions in your response.",
-            explain: "1. Start with a clear, concise statement of the concept.<br>2. Break down complex ideas into simpler components.<br>3. Use analogies and metaphors to relate to familiar concepts.<br>4. Provide real-world examples to illustrate your points.<br>5. Avoid circular reasoning; ensure each explanation adds new information."
+            debate: "Use the SEXI template to structure your response:<br>1. <strong>S</strong>tate your position clearly.<br>2. <strong>E</strong>xplain your reasoning.<br>3. Provide an e<strong>X</strong>ample or evidence.<br>4. Describe the <strong>I</strong>mpact or importance of your argument.<br><br>Start with: 'My position on this topic is...'",
+            storytelling: "Use the 5 C's of storytelling:<br>1. <strong>C</strong>haracters: Introduce the main character(s).<br>2. <strong>C</strong>onflict: Present a challenge or problem.<br>3. <strong>C</strong>hoice: Show the character's decision.<br>4. <strong>C</strong>onsequences: Describe the results of the choice.<br>5. <strong>C</strong>onclusion: Wrap up with a lesson or moral.<br><br>Start with: 'Let me tell you a story about...'",
+            qa: "For asking questions, use the OPEN approach:<br>1. <strong>O</strong>pen-ended: Ask questions that can't be answered with just yes or no.<br>2. <strong>P</strong>robing: Dig deeper into the topic.<br>3. <strong>E</strong>mpathetic: Show understanding and interest.<br>4. <strong>N</strong>on-judgmental: Avoid assumptions or bias.<br><br>For answering, use the STAR method:<br>1. <strong>S</strong>ituation: Provide context.<br>2. <strong>T</strong>ask: Explain the challenge.<br>3. <strong>A</strong>ction: Describe what you did.<br>4. <strong>R</strong>esult: Share the outcome.<br><br>Start with: 'I'd like to ask about...' or 'To answer that question...'",
+            explain: "Use the ELI5 (Explain Like I'm 5) method:<br>1. <strong>S</strong>implify: Break down complex ideas.<br>2. <strong>A</strong>nalogize: Use familiar comparisons.<br>3. <strong>V</strong>isualize: Paint a mental picture.<br>4. <strong>E</strong>xemplify: Provide concrete examples.<br><br>Start with: 'Imagine this concept as if it were...'",
         };
 
         function switchTab(mode) {
             currentMode = mode;
             tabElements.forEach(tab => {
                 if (tab.dataset.tab === mode) {
-                    tab.classList.add('border-b-2', 'border-indigo-500');
+                    tab.classList.add('border-b-2', 'border-accent');
                 } else {
-                    tab.classList.remove('border-b-2', 'border-indigo-500');
+                    tab.classList.remove('border-b-2', 'border-accent');
                 }
             });
-            guidelines.innerHTML = `<h3 class="font-semibold mb-2">Guidelines for ${mode.charAt(0).toUpperCase() + mode.slice(1)}:</h3><p class="text-sm text-gray-700">${guidelinesContent[mode]}</p>`;
+            guidelines.innerHTML = `<h3 class="font-semibold mb-2 text-accent">Guidelines for ${mode.charAt(0).toUpperCase() + mode.slice(1)}:</h3><p class="text-sm text-gray-700">${guidelinesContent[mode]}</p>`;
         }
 
         function toggleRecording() {
@@ -142,8 +151,6 @@
 
                     isRecording = true;
                     recordBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop';
-                    pauseBtn.disabled = false;
-                    submitBtn.disabled = false;
                     startTimer();
                 });
         }
@@ -152,64 +159,56 @@
             mediaRecorder.stop();
             isRecording = false;
             recordBtn.innerHTML = '<i class="fas fa-microphone mr-2"></i>Record';
-            pauseBtn.disabled = true;
-            submitBtn.disabled = false;
             stopTimer();
-        }
-
-        function togglePause() {
-            if (isPaused) {
-                mediaRecorder.resume();
-                pauseBtn.innerHTML = '<i class="fas fa-pause mr-2"></i>Pause';
-                startTimer();
-            } else {
-                mediaRecorder.pause();
-                pauseBtn.innerHTML = '<i class="fas fa-play mr-2"></i>Resume';
-                stopTimer();
-            }
-            isPaused = !isPaused;
-        }
-
-        function finishRecording() {
-            stopRecording();
             sendAudioToServer();
         }
 
         function sendAudioToServer() {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-            const formData = new FormData();
-            formData.append("audio", audioBlob, "recording.webm");
-            formData.append("mode", currentMode);
-            if (conversationId) {
-                formData.append("conversation_id", conversationId);
-            }
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const formData = new FormData();
+                    formData.append("audio", audioBlob, "recording.webm");
+                    formData.append("mode", currentMode);
+                    if (conversationId) {
+                        formData.append("conversation_id", conversationId);
+                    }
 
-            fetch('/process_audio', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                conversationId = data.conversation_id;
-                displayMessage(data.user_input, 'user');
-                displayMessage(data.ai_response, 'ai');
-                playAudioResponse(data.audio_response);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("Error: Failed to process audio");
-            });
-
-            audioChunks = [];
+                    // Ensure the audio data is fully captured before sending the request
+                    setTimeout(() => {
+                        fetch('/process_audio', {
+                            method: 'POST',
+                            body: formData
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Transcription error: ' + response.statusText);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                conversationId = data.conversation_id;
+                                displayMessage(data.user_input, 'user');
+                                displayMessage(data.ai_response, 'ai');
+                                playAudioResponse(data.audio_response);
+                            })
+                            .catch(error => {
+                                console.error(error);
+                            });
+                    }, 1000); // Adjust the delay as needed
+                })
+                .catch(error => {
+                    console.error('Microphone access denied:', error);
+                });
         }
 
         function displayMessage(message, sender) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('flex', 'items-start', 'mb-4');
-            
+
             const profilePic = document.createElement('div');
             profilePic.classList.add('w-8', 'h-8', 'rounded-full', 'mr-3', 'flex-shrink-0');
-            profilePic.style.backgroundColor = sender === 'user' ? '#4F46E5' : '#10B981';
+            profilePic.style.backgroundColor = sender === 'user' ? '#60A1E8' : '#10B981';
 
             const textContainer = document.createElement('div');
             textContainer.classList.add('bg-gray-100', 'rounded', 'px-4', 'py-2', 'max-w-3/4');
@@ -238,6 +237,8 @@
 
         function stopTimer() {
             clearInterval(timerInterval);
+            timerSeconds = 0;
+            updateTimerDisplay();
         }
 
         function updateTimerDisplay() {
@@ -267,4 +268,5 @@
         switchTab('debate');
     </script>
 </body>
+
 </html>

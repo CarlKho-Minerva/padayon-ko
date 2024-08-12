@@ -36,8 +36,8 @@ def synthesize_text(text):
     input_text = texttospeech.SynthesisInput(text=text)
     voice = texttospeech.VoiceSelectionParams(
         language_code="en-US",
-        name="en-US-Standard-C",
-        ssml_gender=texttospeech.SsmlVoiceGender.FEMALE,
+        name="en-US-Journey-D",
+        ssml_gender=texttospeech.SsmlVoiceGender.MALE,
     )
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3

@@ -167,6 +167,38 @@
             guidelines.innerHTML = `<h3 class="font-semibold mb-2 text-accent">Guidelines for ${mode.charAt(0).toUpperCase() + mode.slice(1)}:</h3><p class="text-sm text-gray-700">${guidelinesContent[mode]}</p>`;
         }
 
+        async function checkAndRequestMicrophonePermission() {
+            // Check if permission was previously granted (using cookies)
+            if (document.cookie.includes("microphonePermission=granted")) {
+                console.log("Microphone permission previously granted.");
+                return true;
+            }
+
+            try {
+                const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+                if (permissionStatus.state === 'granted') {
+                    // Permission already granted
+                    setMicrophonePermissionCookie();
+                    return true;
+                } else if (permissionStatus.state === 'prompt') {
+                    // Request permission
+                    await navigator.mediaDevices.getUserMedia({ audio: true });
+                    setMicrophonePermissionCookie();
+                    return true;
+                } else {
+                    console.warn('Microphone permission denied');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error checking microphone permission:', error);
+                return false;
+            }
+        }
+
+        function setMicrophonePermissionCookie() {
+            // Set a cookie to remember permission
+            document.cookie = "microphonePermission=granted; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+        }
 
         function randomizePrompt() {
             const prompts = [
@@ -371,24 +403,8 @@
             timerDisplay.textContent = `${minutes}:${seconds}`;
         }
 
-        async function checkAndRequestMicrophonePermission() {
-            try {
-                const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
-                if (permissionStatus.state === 'granted') {
-                    return true;
-                } else if (permissionStatus.state === 'prompt') {
-                    // Request permission
-                    await navigator.mediaDevices.getUserMedia({ audio: true });
-                    return true;
-                } else {
-                    console.warn('Microphone permission denied');
-                    return false;
-                }
-            } catch (error) {
-                console.error('Error checking microphone permission:', error);
-                return false;
-            }
-        }
+
+
     </script>
 </body>
 

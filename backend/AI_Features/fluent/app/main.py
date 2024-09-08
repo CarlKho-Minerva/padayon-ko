@@ -29,18 +29,17 @@ def process_audio():
         f"Processing audio file with conversation_id: {conversation_id} and mode: {mode}"
     )
 
-    # Save the audio file temporarily
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_audio:
-        audio_file.save(temp_audio.name)
-        temp_audio_path = temp_audio.name
-
     try:
-        with open(temp_audio_path, "rb") as audio_file:
-            audio_data = audio_file.read()
-        debug_print("Audio data read successfully")
+        # Save the audio file temporarily
+        with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as temp_audio:
+            temp_audio.write(audio_file.read())
+            temp_audio_path = temp_audio.name
 
-        user_input = transcribe_audio(audio_data)
+        user_input = transcribe_audio(temp_audio_path)
         debug_print(f"Transcribed audio to text: {user_input}")
+
+        # Remove the temporary audio file
+        os.remove(temp_audio_path)
 
         if user_input is None:
             debug_print("Could not transcribe audio")
@@ -70,9 +69,9 @@ def process_audio():
                 "audio_response": audio_response,
             }
         )
-    finally:
-        # Clean up the temporary file
-        os.unlink(temp_audio_path)
+    except Exception as e:
+        debug_print(f"Error processing audio: {str(e)}")
+        return jsonify({"error": f"Error processing audio: {str(e)}"}), 500
 
 
 @app.route("/get_feedback", methods=["POST"])

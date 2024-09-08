@@ -49,8 +49,8 @@ def generate_ai_response(conversation_id, user_input, mode):
     Please adhere to the following dos and don'ts:
     1. Do: Tailor your responses to the user's current input and the {mode} scenario.
     2. Do: Encourage further elaboration or provide gentle guidance.
-    3. Don’t: Repeat or append previous messages unnecessarily.
-    4. Don’t: Provide generic responses that don't align with the user's input.
+    3. Don't: Repeat or append previous messages unnecessarily.
+    4. Don't: Provide generic responses that don't align with the user's input.
     </CONSTRAINTS>
 
     <CONTEXT>
@@ -117,8 +117,8 @@ def generate_feedback(conversation_id, mode):
     Please adhere to the following dos and don'ts:
     1. Do: Provide feedback that focuses on the user's communication skills and effectiveness.
     2. Do: Be specific and clear in your feedback, using examples from the conversation.
-    3. Don’t: Critique the AI’s performance or responses.
-    4. Don’t: Give vague feedback without actionable advice.
+    3. Don't: Critique the AI's performance or responses.
+    4. Don't: Give vague feedback without actionable advice.
     </CONSTRAINTS>
 
     <CONTEXT>
@@ -136,7 +136,7 @@ def generate_feedback(conversation_id, mode):
     Here are some examples to guide your feedback:
     1. Example #1
         Conversation history: [Sample conversation history]
-        Output: "You demonstrated a strong ability to stay on topic and engage with the AI’s prompts. For example, you effectively elaborated on the concept of portal technology in the Rick and Morty universe. To further enhance your communication, try asking more probing questions or introducing counterarguments to deepen the discussion."
+        Output: "You demonstrated a strong ability to stay on topic and engage with the AI's prompts. For example, you effectively elaborated on the concept of portal technology in the Rick and Morty universe. To further enhance your communication, try asking more probing questions or introducing counterarguments to deepen the discussion."
 
     2. Example #2
         Conversation history: [Sample conversation history]
@@ -145,7 +145,7 @@ def generate_feedback(conversation_id, mode):
 
     <RECAP>
     To summarize, remember the key points:
-    1. Focus on evaluating the user’s communication skills, highlighting both strengths and areas for improvement.
+    1. Focus on evaluating the user's communication skills, highlighting both strengths and areas for improvement.
     2. Provide specific, actionable advice to help the user enhance their verbal communication.
     3. Keep the feedback supportive and encouraging.
     </RECAP>

@@ -133,6 +133,13 @@
         const randomizePromptBtn = document.getElementById('randomize-prompt');
         const guidelines = document.getElementById('guidelines');
 
+        // on page load
+        document.addEventListener('DOMContentLoaded', async function () {
+            randomizePrompt();
+            switchTab('debate');
+            await checkAndRequestMicrophonePermission();
+        });
+
         const tabElements = document.querySelectorAll('.tab');
         tabElements.forEach(tab => {
             tab.addEventListener('click', () => switchTab(tab.dataset.tab));
@@ -163,26 +170,35 @@
 
         function randomizePrompt() {
             const prompts = [
-                "If you could have dinner with any historical figure, who would it be and why?",
-                "What's the most interesting place you've ever visited?",
-                "If you could learn any skill instantly, what would it be?",
-                "What's your favorite book and why do you love it?",
-                "If you could live in any fictional universe, which one would you choose?",
-                "What's the best piece of advice you've ever received?",
-                "If you could solve one global problem, what would it be and how would you approach it?",
-                "What's your favorite childhood memory?",
-                "If you could have any superpower, what would it be and how would you use it?",
-                "What's the most interesting fact you know?"
+                "How might society change if we achieve immortality through technology?",
+                "What are the ethical implications of using AI in healthcare decision-making?",
+                "How would our world be different if we could communicate telepathically?",
+                "What are the potential consequences of discovering extraterrestrial life?",
+                "How might education systems evolve in the next 50 years?",
+                "What are the philosophical implications of living in a simulated reality?",
+                "How might climate change affect global politics and economics in the coming decades?",
+                "What are the potential societal impacts of widespread genetic engineering?",
+                "How might the concept of work change with increasing automation and AI?",
+                "What are the ethical considerations of mind uploading and digital consciousness?"
             ];
+
+            fetch('https://philosophicalapi.pythonanywhere.com/')
+                .then(response => response.json())
+                .then(data => {
+                    const randomPrompt = data.question;
+                    waterCoolerPrompt.innerHTML = `<strong>Let's ponder:</strong> ${randomPrompt}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching prompt:', error);
+                    // Fallback to local prompts if API call fails
+                    const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+                    waterCoolerPrompt.innerHTML = `<strong>Let's consider:</strong> ${randomPrompt}`;
+                });
+
+            // Initial prompt display
             const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
-            waterCoolerPrompt.innerHTML = `<strong>Let's start with:</strong> ${randomPrompt}`;
+            waterCoolerPrompt.innerHTML = `<strong>Let's consider:</strong> ${randomPrompt}`;
         }
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            randomizePrompt();
-            switchTab('debate'); // Initialize with debate tab selected
-        });
 
         const endConversationBtn = document.getElementById('end-conversation-btn');
         const feedbackContainer = document.getElementById('feedback-container');
@@ -226,19 +242,28 @@
                 });
         }
 
-        function startRecording() {
-            audioChunks = []; // Clear the audioChunks array
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.addEventListener("dataavailable", event => {
-                        audioChunks.push(event.data);
-                    });
-                    mediaRecorder.start();
-                    isRecording = true;
-                    recordBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Reply to AI';
-                    startTimer();
+        async function startRecording() {
+            const hasPermission = await checkAndRequestMicrophonePermission();
+            if (!hasPermission) {
+                alert('Microphone access is required for this app to function. Please grant permission and try again.');
+                return;
+            }
+
+            audioChunks = [];
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.addEventListener("dataavailable", event => {
+                    audioChunks.push(event.data);
                 });
+                mediaRecorder.start();
+                isRecording = true;
+                recordBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Reply to AI';
+                startTimer();
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                alert('Failed to start recording. Please make sure your microphone is connected and try again.');
+            }
         }
 
         function stopRecording() {
@@ -346,8 +371,24 @@
             timerDisplay.textContent = `${minutes}:${seconds}`;
         }
 
-        // Initialize with debate tab selected
-        switchTab('debate');
+        async function checkAndRequestMicrophonePermission() {
+            try {
+                const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+                if (permissionStatus.state === 'granted') {
+                    return true;
+                } else if (permissionStatus.state === 'prompt') {
+                    // Request permission
+                    await navigator.mediaDevices.getUserMedia({ audio: true });
+                    return true;
+                } else {
+                    console.warn('Microphone permission denied');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error checking microphone permission:', error);
+                return false;
+            }
+        }
     </script>
 </body>
 

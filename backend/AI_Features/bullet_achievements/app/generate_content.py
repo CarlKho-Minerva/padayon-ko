@@ -24,6 +24,7 @@ def generate_bullet_point(structuredAchievement):
     2. Do: Ensure the bullet point is action-oriented and result-driven.
     3. Don’t: Include unnecessary details or filler words.
     4. Don’t: Use jargon that may confuse the reader.
+    5. Don't put labels like "Refined Bullet:" in the output.
     </CONSTRAINTS>
 
     <CONTEXT>
@@ -99,6 +100,7 @@ Please adhere to the following dos and don'ts:
 1. Do: Expand the bullet point accurately and clearly.
 2. Do: Maintain a natural, human-like tone.
 3. Don’t: Exceed 4 sentences in the description.
+4. Don't put labels like "Optimized Description:" in the output.
 </CONSTRAINTS>
 
 <CONTEXT>

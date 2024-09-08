@@ -63,12 +63,11 @@ Current Bullet: {bulletPoint}
 
 Current Description: {detailedDescription}
 
-Refined Bullet:
-•
+<Refined Bullet here>
+• content
 
 ~
-
-Optimized Description:
+<Optimized Description here>
     """
     response = model.generate_content(refinePrompt)
     return response.text

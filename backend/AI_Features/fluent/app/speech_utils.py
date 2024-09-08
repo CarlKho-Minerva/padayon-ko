@@ -40,7 +40,7 @@ def synthesize_text(text):
         ssml_gender=texttospeech.SsmlVoiceGender.MALE,
     )
     audio_config = texttospeech.AudioConfig(
-        audio_encoding=texttospeech.AudioEncoding.MP3
+        audio_encoding=texttospeech.AudioEncoding.LINEAR16
     )
     response = tts_client.synthesize_speech(
         input=input_text, voice=voice, audio_config=audio_config

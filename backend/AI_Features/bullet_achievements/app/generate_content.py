@@ -92,6 +92,7 @@ To complete the task, follow these steps:
 4. Mention challenges overcome.
 5. Highlight skills developed or applied.
 6. Explain relevance to future goals or field of study.
+7. Emphasize role of person speaking in fostering personal growth or community impact.
 Ensure the description is under 4 sentences and maintains a natural, non-AI tone.
 </INSTRUCTIONS>
 

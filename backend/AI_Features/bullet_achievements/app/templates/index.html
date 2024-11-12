@@ -107,7 +107,8 @@
         }
 
         .guidelines-content {
-            display: none;
+            display: block;
+            /* Change this to block to show guidelines by default */
             background-color: #f9f9f9;
             border: 1px solid #ddd;
             padding: 20px;
@@ -140,7 +141,8 @@
     <div class="container">
         <h1>Achievement Resume Bullet Point Generator</h1>
 
-        <button class="guidelines-toggle" onclick="toggleGuidelines()">Click to view guidelines</button>
+        <button class="guidelines-toggle" onclick="toggleGuidelines()">Click to hide guidelines</button>
+        <!-- Update button text -->
         <div class="guidelines-content" id="guidelines">
             <h2>User Facing Guidelines</h2>
             <h3>Achievement Description Guidelines</h3>

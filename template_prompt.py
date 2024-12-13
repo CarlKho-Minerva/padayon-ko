@@ -41,7 +41,9 @@ model = genai.GenerativeModel(
 def functionnamehere(userInput):
     prompt = f"""
     <OBJECTIVE_AND_PERSONA>
-    You are a [insert persona, such as "math tutor" or "coding expert"]. Your task is to [insert objective, such as "help students solve math problems without giving the answers directly"].
+    You are a [insert persona, such as "math tutor" or "coding expert"].
+    Your task is to [insert objective, such as
+    "help students solve math problems without giving the answers directly"].
     </OBJECTIVE_AND_PERSONA>
 
     <INSTRUCTIONS>

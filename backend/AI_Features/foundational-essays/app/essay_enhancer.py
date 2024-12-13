@@ -105,7 +105,7 @@ def refine_and_optimize_essay(essay, prompt_type):
     3. Maintain authenticity and original voice
     4. Ensure relevance to the specific prompt
     5. Avoid clichés and overly formal language
-    6. NEVER UNDER ANY CIRCUMSTANCES USE THESE WORDS FOCUS ON NUANCE AND HUMAN WRITING {obvious_ai_indicators}
+    6. NEVER UNDER ANY CIRCUMSTANCES USE THESE WORDS. FOCUS ON NUANCE AND HUMAN WRITING {obvious_ai_indicators}
 
     Essay: {essay}
 

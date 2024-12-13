@@ -1,6 +1,14 @@
 # Padayon Ko - Scholarships for Filipino
 
-[Click me to access the solution on Notion](https://cvk-minerva.notion.site/Padayun-Ko-Scholarships-for-Filipinos-7095196f76e14daab9a37a910b5a70ed)
+[Click me to access the solution on Notion](https://cvk-minerva.notion.site/Padayun-Ko-Scholarships-for-Filipinos-7095196f76e14daab9a37a910b5a70ed).
+
+### ‼️ FOR JUDGES ‼️
+
+**Edit @ aug 13 2024 9pm GMT+8**: I will continue working on this project for the coming government testing. Please [click here](https://github.com/CarlKho-Minerva/padayon-ko/tree/70c5b20280b6cac0e711e466f8ccacb9c8b96fa8) to use the code committed on the **AUG 13 5AM GMT+8** *(2 hours before the deadline)*.
+
+This entry is prototyped in Notion given its popularity amongst students. I will be moving towards a dedicated frontend + DB infrastructure on GCP later. This will be then be piloted in Lapu-Lapu City, Cebu, Philippines in the next few days.
+
+Please view `.env.example` for the API keys needed for you to run the demo.
 
 ## 📹 Introduction Video
 

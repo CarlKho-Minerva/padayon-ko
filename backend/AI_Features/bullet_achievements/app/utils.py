@@ -34,7 +34,7 @@ def get_model():
     ]
 
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-pro", safety_settings=safety_settings
+        model_name="gemini-1.5-flash", safety_settings=safety_settings
     )
     return model
 

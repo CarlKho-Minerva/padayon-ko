@@ -6,16 +6,16 @@ from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
-# Clear any existing environment variable
-os.environ.pop("GEMINI_API_KEY", None)
-
 # Load environment variables from .env file
 load_dotenv()
 
-# Retrieve the API key from environment variables
-gemini_api_key = os.getenv("GEMINI_API_KEY")
+# Get API key from environment variable
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("GEMINI_API_KEY environment variable is not set")
 
-genai.configure(api_key="")
+# Configure the Gemini API
+genai.configure(api_key=api_key)
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -154,4 +154,4 @@ def process_story():
 
 
 if __name__ == "__main__":
-    app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 8081)))

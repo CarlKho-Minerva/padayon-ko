@@ -109,6 +109,55 @@
             background-color: #f9f9f9;
             border-left: 3px solid #007bff;
         }
+
+        .stepper {
+            display: none;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            opacity: 0.5;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .step.complete .step-number {
+            background: #28a745;
+        }
+
+        .step-content {
+            flex-grow: 1;
+        }
+
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .step-description {
+            font-size: 0.9em;
+            color: #666;
+        }
     </style>
 </head>
 
@@ -130,6 +179,37 @@
     </div>
 
     <div class="loading" id="loading">Processing</div>
+
+    <div class="stepper" id="progressStepper">
+        <div class="step" data-step="cleaning">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <div class="step-title">Cleaning Text</div>
+                <div class="step-description">Removing fillers and improving clarity</div>
+            </div>
+        </div>
+        <div class="step" data-step="processing">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <div class="step-title">Processing Essay</div>
+                <div class="step-description">Analyzing content and structure</div>
+            </div>
+        </div>
+        <div class="step" data-step="refining">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <div class="step-title">Refining Content</div>
+                <div class="step-description">Optimizing for impact and clarity</div>
+            </div>
+        </div>
+        <div class="step" data-step="formatting">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <div class="step-title">Final Formatting</div>
+                <div class="step-description">Polishing the final output</div>
+            </div>
+        </div>
+    </div>
 
     <div id="processedEssay"></div>
 
@@ -252,6 +332,23 @@
             `;
         }
 
+        function updateProgress(step) {
+            const stepper = document.getElementById('progressStepper');
+            const steps = stepper.querySelectorAll('.step');
+            let found = false;
+
+            steps.forEach(stepEl => {
+                if (stepEl.dataset.step === step) {
+                    stepEl.classList.add('active');
+                    found = true;
+                } else if (!found) {
+                    stepEl.classList.add('active', 'complete');
+                } else {
+                    stepEl.classList.remove('active', 'complete');
+                }
+            });
+        }
+
         async function handleSubmit() {
             const essayContent = document.getElementById('essayContent').value;
             const needsTranslation = document.getElementById('needsTranslation').checked;
@@ -259,6 +356,7 @@
             const loading = document.getElementById('loading');
             const processedEssayDiv = document.getElementById('processedEssay');
             const errorDiv = document.getElementById('error');
+            const stepper = document.getElementById('progressStepper');
 
             if (!essayContent.trim()) {
                 errorDiv.textContent = 'Please enter your essay content.';
@@ -269,25 +367,36 @@
             loading.style.display = 'block';
             errorDiv.textContent = '';
             processedEssayDiv.textContent = '';
+            stepper.style.display = 'block';
 
             try {
-                const response = await fetch('/process', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        essay_type: activePrompt,
-                        essay_content: essayContent,
-                        needs_translation: needsTranslation,
-                    }),
-                });
+                const eventSource = new EventSource('/process-stream?' + new URLSearchParams({
+                    essay_type: activePrompt,
+                    essay_content: essayContent,
+                    needs_translation: needsTranslation
+                }));
 
-                if (!response.ok) throw new Error('Failed to process essay');
+                eventSource.onmessage = function (event) {
+                    const data = JSON.parse(event.data);
 
-                const data = await response.json();
-                processedEssayDiv.textContent = data.processed_essay;
-                document.getElementById('essayForm').style.display = 'none';
+                    if (data.step) {
+                        updateProgress(data.step);
+                    }
+
+                    if (data.final_essay) {
+                        processedEssayDiv.textContent = data.final_essay;
+                        eventSource.close();
+                    }
+                };
+
+                eventSource.onerror = function () {
+                    eventSource.close();
+                    errorDiv.textContent = 'An error occurred while processing your essay. Please try again.';
+                    stepper.style.display = 'none';
+                };
             } catch (err) {
                 errorDiv.textContent = 'An error occurred while processing your essay. Please try again.';
+                stepper.style.display = 'none';
             } finally {
                 submitBtn.disabled = false;
                 loading.style.display = 'none';

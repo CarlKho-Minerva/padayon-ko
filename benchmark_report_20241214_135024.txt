@@ -1,0 +1,24 @@
+
+Mathy You API Performance Analysis
+==================================
+
+Date: December 14, 2024
+
+Method
+------
+The performance analysis was conducted on a Flask-based API serving mathematics education content.
+The test included 100 total requests across 2 distinct endpoints.
+All measurements were performed on a local development environment.
+
+Results
+-------
+Response time analysis revealed the following patterns:
+
+
+Initial Endpoint:
+M = 5.337 ms (SD = 9.702, n = 50)
+Range: 1.152 - 53.587 ms
+
+Start_Chat Endpoint:
+M = 2850.356 ms (SD = 436.719, n = 50)
+Range: 1967.364 - 4298.509 ms

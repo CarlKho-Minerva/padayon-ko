@@ -1,0 +1,7 @@
+.git
+.gitignore
+.env
+__pycache__/
+*.pyc
+.venv/
+# Don't ignore key.json as we need it for the build

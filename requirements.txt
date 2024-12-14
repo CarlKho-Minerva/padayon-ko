@@ -275,3 +275,9 @@ yarl==1.8.2
 yfinance==0.2.36
 zipp==3.17.0
 zope.interface==6.0
+
+requests
+psutil
+pandas
+seaborn
+matplotlib

@@ -21,3 +21,4 @@ def configure_gemini():
         system_instruction=system_instruction,
         tools="code_execution",
     )
+

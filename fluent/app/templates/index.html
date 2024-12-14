@@ -36,6 +36,119 @@
             padding: 1rem;
             margin-top: 1rem;
         }
+
+        .record-btn {
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .record-btn.recording {
+            background-color: #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        .thinking {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #60A1E8;
+            border-radius: 50%;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-5px);
+            }
+        }
+
+        .timer {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #60A1E8;
+            font-family: monospace;
+        }
+
+        .subtitles {
+            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            text-align: center;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .message-audio {
+            width: 100%;
+            height: 30px;
+            margin-top: 0.5rem;
+        }
+
+        .message-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        #end-conversation-btn {
+            background-color: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        #end-conversation-btn:hover {
+            background-color: #dc2626;
+        }
     </style>
 </head>
 
@@ -46,72 +159,81 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-xl font-semibold mb-4 text-accent">Fluent by Padayon Ko</h2>
                 <div id="water-cooler-prompt" class="water-cooler-prompt text-gray-700 mb-4"></div>
-                <button id="randomize-prompt"
-                    class="bg-accent text-white px-4 py-2 rounded hover:bg-accent/80 transition">
-                    <i class="fas fa-random mr-2"></i>Randomize Prompt
-                </button>
-                <p class="text-sm text-gray-500 mt-2">Made with love 🫶 by <u><a href="http://carlkho.com">Carl
-                            Kho</a></u> 2024
-                </p>
-
+                <div class="flex flex-col gap-3">
+                    <button id="randomize-prompt" class="bg-accent text-white px-4 py-2 rounded hover:bg-accent/80 transition">
+                        <i class="fas fa-random mr-2"></i>Randomize Prompt
+                    </button>
+                    <button id="end-conversation-btn" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition">
+                        <i class="fas fa-stop-circle mr-2"></i>End and Receive Feedback
+                    </button>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Made with love 🫶 by <u><a href="http://carlkho.com">Carl Kho</a></u> 2024</p>
                 <div id="feedback-container" class="feedback-container mt-4 hidden">
                     <h3 class="font-semibold mb-2 text-accent">Conversation Feedback:</h3>
                     <div id="conversation-feedback" class="text-sm text-gray-700"></div>
                 </div>
             </div>
 
-
             <!-- Main Chat Interface -->
-            <div class="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-                <!-- Tabs -->
-                <div class="mb-4">
-                    <ul class="flex flex-wrap border-b">
-                        <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
-                                data-tab="debate">Debate</a>
-                        </li>
-                        <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
-                                data-tab="storytelling">Storytelling</a>
-                        </li>
-                        <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
-                                data-tab="qa">Q&A</a>
-                        </li>
-                        <li class="mr-1">
-                            <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
-                                data-tab="explain">Explain</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Guidelines -->
-                <div id="guidelines" class="mb-4 p-4 bg-gray-100 rounded">
-                    <h3 class="font-semibold mb-2 text-accent">Guidelines:</h3>
-                    <p class="text-sm text-gray-700">Select a mode to see specific guidelines.</p>
-                </div>
-
-                <!-- Chat Container -->
-                <div id="chat-container" class="h-64 overflow-y-auto border border-gray-300 rounded p-4 mb-4">
-                    <!-- Messages will be appended here -->
-                </div>
-
-                <!-- Controls -->
-                <div class="flex flex-col sm:flex-row items-center justify-between mb-4">
-                    <div class="flex items-center space-x-2 mb-2 sm:mb-0">
-                        <button id="record-btn"
-                            class="bg-accent text-white px-4 py-2 rounded hover:bg-accent/80 transition">
-                            <i class="fas fa-microphone mr-2"></i>Start Talking
-                        </button>
-                        <button id="end-conversation-btn"
-                            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition hidden">
-                            End Convo and Receive Feedback
-                        </button>
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 h-full flex flex-col">
+                    <!-- Tabs -->
+                    <div class="mb-4">
+                        <ul class="flex flex-wrap border-b">
+                            <li class="mr-1">
+                                <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                    data-tab="debate">Debate</a>
+                            </li>
+                            <li class="mr-1">
+                                <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                    data-tab="storytelling">Storytelling</a>
+                            </li>
+                            <li class="mr-1">
+                                <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                    data-tab="qa">Q&A</a>
+                            </li>
+                            <li class="mr-1">
+                                <a class="bg-white inline-block py-2 px-4 text-accent hover:text-accent/80 font-semibold cursor-pointer tab"
+                                    data-tab="explain">Explain</a>
+                            </li>
+                        </ul>
                     </div>
-                    <div id="timer" class="text-xl font-mono text-accent">00:00</div>
-                </div>
 
-                <audio id="audio-response" controls class="w-full"></audio>
+                    <!-- Guidelines -->
+                    <div id="guidelines" class="mb-4 p-4 bg-gray-100 rounded">
+                        <h3 class="font-semibold mb-2 text-accent">Guidelines:</h3>
+                        <p class="text-sm text-gray-700">Select a mode to see specific guidelines.</p>
+                    </div>
+
+                    <!-- Add this before the chat container -->
+                    <div id="thinking" class="thinking hidden">
+                        <span>AI is thinking</span>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+
+                    <!-- Chat Container -->
+                    <div class="flex-1 flex flex-col min-h-0"> <!-- This ensures proper height containment -->
+                        <div id="thinking" class="thinking hidden">
+                            <span class="text-gray-600">AI is thinking</span>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+
+                        <div id="chat-container" class="flex-1 overflow-y-auto border border-gray-300 rounded p-4 mb-4 min-h-[150px]">
+                            <!-- Messages will be appended here -->
+                        </div>
+
+                        <div class="flex flex-col items-center gap-4 mt-auto pt-4">
+                            <button id="record-btn" class="record-btn bg-accent text-white rounded-full shadow-lg hover:bg-accent/80 transition">
+                                <i class="fas fa-microphone mr-2"></i>Start Talking
+                            </button>
+                            <div id="timer" class="timer">00:00</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -164,7 +286,9 @@
                     tab.classList.remove('border-b-2', 'border-accent');
                 }
             });
-            guidelines.innerHTML = `<h3 class="font-semibold mb-2 text-accent">Guidelines for ${mode.charAt(0).toUpperCase() + mode.slice(1)}:</h3><p class="text-sm text-gray-700">${guidelinesContent[mode]}</p>`;
+            guidelines.innerHTML = `<h3 class="font-semibold mb-2 text-accent">Guidelines for ${mode.charAt(0).toUpperCase() +
+                mode.slice(1)}:</h3>
+                                                                            <p class="text-sm text-gray-700">${guidelinesContent[mode]}</p>`;
         }
 
         async function checkAndRequestMicrophonePermission() {
@@ -240,17 +364,25 @@
 
         function toggleRecording() {
             if (!isRecording) {
+                recordBtn.classList.add('recording');
                 startRecording();
-                endConversationBtn.classList.remove('hidden');
+                document.getElementById('end-conversation-btn').classList.remove('hidden');
             } else {
+                recordBtn.classList.remove('recording');
                 stopRecording();
+                document.getElementById('thinking').classList.remove('hidden');
             }
         }
 
         function endConversation() {
-            stopRecording();
+            if (isRecording) {
+                stopRecording();
+            }
             endConversationBtn.classList.add('hidden');
-            getFeedback();
+            // Add a small delay to ensure the last message is processed
+            setTimeout(() => {
+                getFeedback();
+            }, 1500);
         }
 
         function getFeedback() {
@@ -324,6 +456,7 @@
                             body: formData
                         })
                             .then(response => {
+                                document.getElementById('thinking').classList.add('hidden');
                                 if (!response.ok) {
                                     throw new Error('Transcription error: ' + response.statusText);
                                 }
@@ -353,35 +486,46 @@
             profilePic.classList.add('w-8', 'h-8', 'rounded-full', 'mr-3', 'flex-shrink-0');
             profilePic.style.backgroundColor = sender === 'user' ? '#60A1E8' : '#10B981';
 
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+
             const textContainer = document.createElement('div');
-            textContainer.classList.add('bg-gray-100', 'rounded', 'px-4', 'py-2', 'max-w-3/4');
+            textContainer.classList.add('bg-gray-100', 'rounded', 'px-4', 'py-2');
             textContainer.textContent = message;
 
+            messageContainer.appendChild(textContainer);
+
+            // Only add audio player for AI messages, remove subtitles since text is already shown
+            if (sender === 'ai') {
+                const audioElement = document.createElement('audio');
+                audioElement.classList.add('message-audio');
+                audioElement.controls = true;
+                if (window.lastAudioResponse) {
+                    audioElement.src = "data:audio/mp3;base64," + window.lastAudioResponse;
+                }
+                messageContainer.appendChild(audioElement);
+            }
+
             messageElement.appendChild(profilePic);
-            messageElement.appendChild(textContainer);
+            messageElement.appendChild(messageContainer);
 
             chatContainer.appendChild(messageElement);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         function playAudioResponse(audioData) {
-            audioResponse.src = "data:audio/mp3;base64," + audioData;
-            audioResponse.style.display = 'block';
-
-            // Attempt to autoplay
-            audioResponse.play().catch(error => {
-                console.warn('Autoplay was prevented. User interaction may be required.');
-                // You might want to show a play button or message to the user here
-            });
+            window.lastAudioResponse = audioData; // Store for future messages
+            const lastMessage = chatContainer.lastElementChild;
+            if (lastMessage) {
+                const audioElement = lastMessage.querySelector('audio');
+                if (audioElement) {
+                    audioElement.src = "data:audio/mp3;base64," + audioData;
+                    audioElement.play().catch(error => {
+                        console.warn('Autoplay was prevented. User interaction may be required.');
+                    });
+                }
+            }
         }
-
-        // Add event listener for user interaction
-        document.body.addEventListener('click', function () {
-            audioResponse.play().catch(error => {
-                console.warn('Autoplay after user interaction failed:', error);
-            });
-        }, { once: true });
-
 
         function startTimer() {
             stopTimer(); // Clear any existing interval
@@ -401,10 +545,13 @@
             const minutes = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
             const seconds = (timerSeconds % 60).toString().padStart(2, '0');
             timerDisplay.textContent = `${minutes}:${seconds}`;
+
+            if (timerSeconds >= 30) {
+                timerDisplay.style.color = '#ef4444';
+            } else {
+                timerDisplay.style.color = '#60A1E8';
+            }
         }
-
-
-
     </script>
 </body>
 

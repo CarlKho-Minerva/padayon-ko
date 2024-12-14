@@ -1,2 +1,7 @@
 flask
 google.generativeai
+psutil
+pandas
+seaborn
+matplotlib
+requests

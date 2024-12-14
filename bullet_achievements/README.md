@@ -1,17 +1,16 @@
 # Achievement Resume Bullet Point Generator
 
-A Flask-based web application using Google's Gemini AI to generate professional resume bullet points and detailed descriptions from achievement inputs, with real-time processing indicators and Cloud Run deployment support.
+A Flask web application that transforms achievement descriptions into polished resume bullet points using Google's Gemini AI, with real-time processing indicators and Cloud Run deployment.
 
-## Features
+## Key Features
 
-- Real-time processing status indicators
-- Automatic input cleaning and formatting
-- Support for non-English inputs
+- Real-time processing status indicators with visual feedback
+- Multi-language support with automatic translation
+- Achievement structuring using X-Y-Z formula
+- Detailed guidelines for achievement descriptions
 - Mobile-responsive design
-- Google Cloud Run ready
-- Service account authentication for Gemini API
-- Fallback to API key authentication
-- Debug logging system
+- Production-ready with Gunicorn server
+- Fallback authentication system
 
 ## Prerequisites
 
@@ -55,6 +54,7 @@ bullet_achievements/
 
 1. Clone the repository
 2. Create a virtual environment:
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
@@ -63,12 +63,14 @@ source .venv/bin/activate  # Linux/Mac
 ```
 
 3. Install dependencies:
+
 ```bash
 cd app
 pip install -r requirements.txt
 ```
 
 4. Create a `.env` file:
+
 ```
 GEMINI_API_KEY=your_api_key_here
 ```
@@ -76,20 +78,23 @@ GEMINI_API_KEY=your_api_key_here
 ## Local Development
 
 1. Run the Flask application:
+
 ```bash
 python main.py
 ```
 
-2. Visit http://localhost:8080
+2. Visit <http://localhost:8080>
 
 ## Docker Deployment
 
 1. Build the Docker image:
+
 ```bash
 docker build -t bullet-achievements .
 ```
 
 2. Run the container:
+
 ```bash
 docker run -p 8080:8080 --env-file .env bullet-achievements
 ```
@@ -97,6 +102,7 @@ docker run -p 8080:8080 --env-file .env bullet-achievements
 ## Google Cloud Run Deployment
 
 1. Set up Google Cloud:
+
 ```bash
 # Install Google Cloud SDK
 # https://cloud.google.com/sdk/docs/install
@@ -112,6 +118,7 @@ gcloud services enable run.googleapis.com artifactregistry.googleapis.com
 ```
 
 2. Create service account for Gemini API:
+
 ```bash
 # Create service account
 gcloud iam service-accounts create gemini-service --display-name="Gemini API Service Account"
@@ -130,6 +137,7 @@ gcloud iam service-accounts keys create key.json \
 ```
 
 3. Deploy to Cloud Run:
+
 ```bash
 gcloud run deploy bullet-achievements \
     --source . \

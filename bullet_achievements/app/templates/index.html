@@ -134,6 +134,53 @@
                 font-size: 1.2em;
             }
         }
+
+        #processingSteps {
+            display: none;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .step {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .step.active {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .step.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .loading {
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .loading:after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ' '; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -187,7 +234,18 @@
                 Input is in English
             </label>
         </div>
-        <button onclick="generateResume()">Generate</button>
+        <button id="generateBtn" onclick="generateResume()">Generate</button>
+
+        <div id="processingSteps">
+            <h3>Processing Steps:</h3>
+            <div id="step1" class="step">1. Cleaning input</div>
+            <div id="step2" class="step">2. Extracting information</div>
+            <div id="step3" class="step">3. Structuring achievement</div>
+            <div id="step4" class="step">4. Generating bullet point</div>
+            <div id="step5" class="step">5. Creating detailed description</div>
+            <div id="step6" class="step">6. Refining output</div>
+        </div>
+
         <div id="result">
             <h2>Bullet Point:</h2>
             <p id="bullet"></p>
@@ -213,7 +271,40 @@
             const isEnglish = document.getElementById('isEnglish').checked;
             const bulletEl = document.getElementById('bullet');
             const descriptionEl = document.getElementById('description');
+            const generateBtn = document.getElementById('generateBtn');
+            const processingSteps = document.getElementById('processingSteps');
+
             try {
+                // Clear previous results
+                bulletEl.textContent = '';
+                descriptionEl.textContent = '';
+
+                // Disable button and show processing steps
+                generateBtn.disabled = true;
+                processingSteps.style.display = 'block';
+
+                // Reset all steps
+                for (let i = 1; i <= 6; i++) {
+                    document.getElementById(`step${i}`).className = 'step';
+                }
+
+                const updateStep = (step) => {
+                    for (let i = 1; i <= step; i++) {
+                        const prevStep = document.getElementById(`step${i}`);
+                        if (i === step) {
+                            prevStep.className = 'step active';
+                            prevStep.innerHTML = `${prevStep.innerHTML.split('<')[0]}<span class="loading"></span>`;
+                        } else {
+                            prevStep.className = 'step completed';
+                            prevStep.innerHTML = prevStep.innerHTML.split('<')[0] + ' ✓';
+                        }
+                    }
+                };
+
+                // Start processing animation
+                let currentStep = 1;
+                updateStep(currentStep);
+
                 const response = await fetch('/generate', {
                     method: 'POST',
                     headers: {
@@ -221,8 +312,26 @@
                     },
                     body: JSON.stringify({ achievement: achievement, isEnglish: isEnglish }),
                 });
+
+                // Simulate step progress (since we can't get real-time updates from backend)
+                const stepInterval = setInterval(() => {
+                    if (currentStep < 6) {
+                        currentStep++;
+                        updateStep(currentStep);
+                    }
+                }, 1000);
+
                 const data = await response.json();
+                clearInterval(stepInterval);
+
                 if (response.ok) {
+                    // Mark all steps as completed
+                    for (let i = 1; i <= 6; i++) {
+                        const step = document.getElementById(`step${i}`);
+                        step.className = 'step completed';
+                        step.innerHTML = step.innerHTML.split('<')[0] + ' ✓';
+                    }
+
                     bulletEl.textContent = data.bullet;
                     descriptionEl.textContent = data.description;
                 } else {
@@ -232,6 +341,9 @@
             } catch (error) {
                 bulletEl.textContent = 'Error generating bullet point.';
                 descriptionEl.textContent = `Error: ${error.message}`;
+            } finally {
+                generateBtn.disabled = false;
+                // Keep processing steps visible to show completion state
             }
         }
     </script>

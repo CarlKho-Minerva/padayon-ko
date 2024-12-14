@@ -12,17 +12,13 @@ def debug_print(message):
 
 
 def configure_genai():
-    # Clear any existing environment variable
-    os.environ.pop("GEMINI_API_KEY", None)
-
-    # Load environment variables from .env file
     load_dotenv()
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable is required")
 
-    # Retrieve the API key from environment variables
-    gemini_api_key = os.getenv("GEMINI_API_KEY")
-    print(gemini_api_key)
-
-    genai.configure(api_key=gemini_api_key)
+    genai.configure(api_key=api_key)
+    debug_print("Configured with API key")
 
 
 def get_model():
@@ -34,7 +30,7 @@ def get_model():
     ]
 
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash", safety_settings=safety_settings
+        model_name="gemini-1.5-pro", safety_settings=safety_settings
     )
     return model
 

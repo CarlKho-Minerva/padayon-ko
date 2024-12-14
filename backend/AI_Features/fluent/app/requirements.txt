@@ -1,7 +1,0 @@
-Flask
-google-cloud-speech
-google-cloud-texttospeech
-google-cloud-storage
-python-dotenv
-google-generativeai
-markdown

@@ -23,7 +23,7 @@ def measure_single_request(text):
     }
 
 
-def run_quick_benchmark(num_requests=30):
+def run_quick_benchmark(num_requests=50):
     """Run a quick benchmark with fewer samples"""
     test_inputs = [
         "Led a team",  # Short

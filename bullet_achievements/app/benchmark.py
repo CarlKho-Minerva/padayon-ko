@@ -23,9 +23,8 @@ def measure_single_request(text):
     }
 
 
-def run_quick_benchmark(num_requests=10):
+def run_quick_benchmark(num_requests=50):
     """Run a quick benchmark with fewer samples"""
-    # Simple test inputs of varying lengths
     test_inputs = [
         "Led a team",  # Short
         "Led a team of 5 developers",  # Medium
@@ -50,21 +49,19 @@ def run_quick_benchmark(num_requests=10):
 
 def generate_quick_viz(df):
     """Generate simplified visualizations"""
-    plt.figure(figsize=(12, 5))
+    plt.figure(figsize=(14, 6))
 
-    # 1. Response Time Distribution
+    # Response Time Distribution
     plt.subplot(1, 2, 1)
     sns.boxplot(data=df, y="response_time", x="input_length")
-    plt.title(
-        "Figure 1\nResponse Time Distribution by Input Length for Achievement Bullet Maker"
-    )
+    plt.title("Response Time Distribution by Input Length")
     plt.xlabel("Input Length (characters)")
     plt.ylabel("Response Time (seconds)")
 
-    # 2. Performance Over Time
+    # Performance Over Time
     plt.subplot(1, 2, 2)
     sns.scatterplot(data=df, x="timestamp", y="response_time", alpha=0.6)
-    plt.title("Figure 2\nAchievement Bullet Maker Response Time Trend")
+    plt.title("Response Time Trend Over Time")
     plt.xlabel("Request Timestamp")
     plt.ylabel("Response Time (seconds)")
 
@@ -72,7 +69,6 @@ def generate_quick_viz(df):
     plt.savefig("achievement_bullet_maker_benchmark.png")
     print("Visualizations saved as 'achievement_bullet_maker_benchmark.png'")
 
-    # Quick stats
     stats = {
         "avg_response_time": df["response_time"].mean(),
         "median_response_time": df["response_time"].median(),
@@ -96,7 +92,6 @@ def main():
     print(f"Median Response Time: {stats['median_response_time']:.2f} seconds")
     print(f"Max Response Time: {stats['max_response_time']:.2f} seconds")
 
-    # Save raw data
     df.to_csv("quick_benchmark_data.csv", index=False)
 
 

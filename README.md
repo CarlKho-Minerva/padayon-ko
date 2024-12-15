@@ -5,7 +5,7 @@ Please view `.env.example` for the API keys needed for you to run parts of the d
 
 ## 📹 Introduction Video
 
-[![Watch the video](https://i.imgur.com/3IRuTDq.png)](https://youtu.be/MorvT9I0M9I)
+[![Watch the video](https://i.imgur.com/3IRuTDq.png)](https://www.youtube.com/watch?v=cA6Wm2oLUdI)
 
 ---
 

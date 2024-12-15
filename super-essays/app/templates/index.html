@@ -18,11 +18,144 @@
             }
         }
     </script>
+    <style>
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+            padding: 0 2rem;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding: 0 1rem;
+            max-width: 150px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            color: #6b7280;
+            font-weight: bold;
+        }
+
+        .step.active .step-number {
+            background-color: #3B82F6;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: #10B981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .step.active .step-label {
+            color: #3B82F6;
+            font-weight: bold;
+        }
+
+        .step.completed .step-label {
+            color: #10B981;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 15px;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background-color: #e5e7eb;
+            z-index: -1;
+        }
+
+        .stepper-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .steps-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .loading-indicator {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+
+        .status-message {
+            font-size: 0.875rem;
+            color: #3B82F6;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .button-with-loading {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="container mx-auto p-6 bg-white rounded-lg shadow-lg max-w-4xl">
         <h1 class="text-3xl font-bold mb-6 text-primary">Scholarship Essay Generator</h1>
+
+        <!-- Fixed Stepper Structure -->
+        <div class="stepper-container">
+            <div class="steps-wrapper">
+                <div class="progress-line"></div>
+                <div class="step active" id="step1-indicator">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Enter Question</div>
+                </div>
+                <div class="step" id="step2-indicator">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Select Essays</div>
+                </div>
+                <div class="step" id="step3-indicator">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Select Achievements</div>
+                </div>
+                <div class="step" id="step4-indicator">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Generate Essay</div>
+                </div>
+            </div>
+        </div>
 
         <div id="step1" class="mb-6">
             <label for="query" class="block text-sm font-medium text-gray-700 mb-2">Scholarship Question:</label>
@@ -32,6 +165,10 @@
             <button onclick="queryEssaysAchievements()"
                 class="mt-2 px-4 py-2 bg-primary text-white rounded hover:bg-secondary transition-colors">Find Relevant
                 Essays & Achievements</button>
+            <div id="queryStatus" class="status-message hidden">
+                <span class="loading-indicator"></span>
+                <span class="ml-2">Finding relevant essays and achievements...</span>
+            </div>
         </div>
 
         <div id="step2" class="hidden mb-6">
@@ -46,9 +183,16 @@
 
         <div id="step4" class="hidden mb-6">
             <h2 class="text-xl font-semibold mb-2 text-primary">Generate Essay</h2>
-            <button onclick="generateEssay()"
-                class="px-4 py-2 bg-primary text-white rounded hover:bg-secondary transition-colors">Generate
-                Essay</button>
+            <div class="button-with-loading">
+                <button onclick="generateEssay()"
+                    class="px-4 py-2 bg-primary text-white rounded hover:bg-secondary transition-colors">
+                    Generate Essay
+                </button>
+            </div>
+            <div id="generateStatus" class="status-message hidden">
+                <span class="loading-indicator"></span>
+                <span class="ml-2">Crafting your essay...</span>
+            </div>
         </div>
 
         <div id="output" class="hidden mb-6">
@@ -85,34 +229,51 @@
         let selectedAchievements = [];
 
         async function queryEssaysAchievements() {
-            const query = document.getElementById('query').value;
+            const queryStatus = document.getElementById('queryStatus');
+            const button = document.querySelector('#step1 button');
+
             try {
-                const response = await fetch('/query_essays_achievements', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ query }),
-                });
+                queryStatus.classList.remove('hidden');
+                button.disabled = true;
+                button.classList.add('opacity-50');
+                updateStepper(2);
+                const query = document.getElementById('query').value;
+                try {
+                    const response = await fetch('/query_essays_achievements', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ query }),
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    essays = data.essays;
+                    achievements = data.achievements;
+
+                    displayEssays(essays);
+                    displayAchievements(achievements);
+
+                    document.getElementById('step2').classList.remove('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                    document.getElementById('step4').classList.remove('hidden');
+                    hideError();
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError('Failed to fetch essays and achievements. Please try again.');
                 }
-
-                const data = await response.json();
-
-                essays = data.essays;
-                achievements = data.achievements;
-
-                displayEssays(essays);
-                displayAchievements(achievements);
-
-                document.getElementById('step2').classList.remove('hidden');
-                document.getElementById('step3').classList.remove('hidden');
-                document.getElementById('step4').classList.remove('hidden');
-                hideError();
+                queryStatus.classList.add('hidden');
+                button.disabled = false;
+                button.classList.remove('opacity-50');
             } catch (error) {
-                console.error('Error:', error);
+                queryStatus.classList.add('hidden');
+                button.disabled = false;
+                button.classList.remove('opacity-50');
                 showError('Failed to fetch essays and achievements. Please try again.');
             }
         }
@@ -157,6 +318,7 @@
             } else {
                 selectedEssays = selectedEssays.filter(content => content !== essays[index].content);
             }
+            updateStepperBasedOnSelections();
         }
 
         function toggleAchievement(index, checked) {
@@ -165,36 +327,54 @@
             } else {
                 selectedAchievements = selectedAchievements.filter(content => content !== achievements[index].content);
             }
+            updateStepperBasedOnSelections();
         }
 
         async function generateEssay() {
-            const query = document.getElementById('query').value;
+            const generateStatus = document.getElementById('generateStatus');
+            const button = document.querySelector('#step4 button');
+
             try {
-                const response = await fetch('/generate_essay', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        query,
-                        selected_essays: selectedEssays,
-                        selected_achievements: selectedAchievements,
-                    }),
-                });
+                generateStatus.classList.remove('hidden');
+                button.disabled = true;
+                button.classList.add('opacity-50');
+                const query = document.getElementById('query').value;
+                try {
+                    const response = await fetch('/generate_essay', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query,
+                            selected_essays: selectedEssays,
+                            selected_achievements: selectedAchievements,
+                        }),
+                    });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    document.getElementById('essayTitle').textContent = data.title;
+                    document.getElementById('essayContent').textContent = data.content;
+                    document.getElementById('output').classList.remove('hidden');
+                    document.getElementById('actions').classList.remove('hidden');
+                    hideError();
+                    updateStepper(4);
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError('Failed to generate essay. Please try again.');
                 }
-
-                const data = await response.json();
-
-                document.getElementById('essayTitle').textContent = data.title;
-                document.getElementById('essayContent').textContent = data.content;
-                document.getElementById('output').classList.remove('hidden');
-                document.getElementById('actions').classList.remove('hidden');
-                hideError();
+                generateStatus.classList.add('hidden');
+                button.disabled = false;
+                button.classList.remove('opacity-50');
             } catch (error) {
-                console.error('Error:', error);
+                generateStatus.classList.add('hidden');
+                button.disabled = false;
+                button.classList.remove('opacity-50');
                 showError('Failed to generate essay. Please try again.');
             }
         }
@@ -209,6 +389,7 @@
         }
 
         function newEssay() {
+            updateStepper(1);
             document.getElementById('query').value = '';
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.add('hidden');
@@ -230,6 +411,31 @@
 
         function hideError() {
             document.getElementById('error').classList.add('hidden');
+        }
+
+        function updateStepper(currentStep) {
+            const steps = ['step1-indicator', 'step2-indicator', 'step3-indicator', 'step4-indicator'];
+            steps.forEach((stepId, index) => {
+                const stepElement = document.getElementById(stepId);
+                if (index + 1 < currentStep) {
+                    stepElement.classList.remove('active');
+                    stepElement.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    stepElement.classList.add('active');
+                    stepElement.classList.remove('completed');
+                } else {
+                    stepElement.classList.remove('active', 'completed');
+                }
+            });
+        }
+
+        function updateStepperBasedOnSelections() {
+            if (selectedEssays.length > 0) {
+                updateStepper(3);
+            }
+            if (selectedAchievements.length > 0) {
+                updateStepper(4);
+            }
         }
     </script>
 </body>

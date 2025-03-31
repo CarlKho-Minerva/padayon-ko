@@ -1,4 +1,12 @@
 # Padayon Ko - Scholarships for Filipino
+
+## Achievements
+1. Winner of [Google Cloud Platform's AI for Impact Hackathon](https://www.linkedin.com/posts/carlkho_ai-for-impact-apac-hackathon-activity-7283664286671847424-tMP2?utm_source=share&utm_medium=member_desktop&rcm=ACoAADAIzlwBpnQCFUdNKhY1dOASx_jUmKQiBFY)
+2. Adopted by STEC-SHS in Lapu-Lapu City, Cebu with local City Government (~500 local/international scholars)
+3. 2nd Place Red Bull Basement Philippines
+4. Entry for [Gemini API Competition](https://ai.google.dev/competition/projects/padayon-ko-scholarships-for-filipinos)
+
+
 Please view `.env.example` for the API keys needed for you to run parts of the demo involving access to user data. The rest of the demo (AI Tools) can be run without the API keys.
 
 [Click me to access the solution on Notion](https://cvk-minerva.notion.site/Padayun-Ko-Scholarships-for-Filipinos-7095196f76e14daab9a37a910b5a70ed).
